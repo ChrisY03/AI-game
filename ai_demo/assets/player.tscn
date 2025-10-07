@@ -9,7 +9,7 @@
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_s5gk4"]
 
-[node name="Player" type="CharacterBody3D"]
+[node name="Player" type="CharacterBody3D" groups=["player"]]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.93544, 0)
 script = ExtResource("1_6vchf")
 
