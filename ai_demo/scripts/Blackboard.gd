@@ -9,5 +9,5 @@ func tick(delta: float) -> void:
 	for n in alerts:
 		n["ttl"] -= delta
 	alerts = alerts.filter(func(item): return item["ttl"] > 0.0)
-
+hello
  
