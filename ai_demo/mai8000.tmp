@@ -117,9 +117,6 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.4184, -0.411844, 3.74036)
 [node name="WP4" parent="WorldEnvironment/Guard" index="5"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -15.7394, -5.40702, -18.1447)
 
-[node name="RayCast3D" parent="WorldEnvironment/Guard/Facing" index="2"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.126575, 0.579371, -0.639258)
-
 [node name="Player" parent="." instance=ExtResource("3_0ny4l")]
 
 [node name="Camera3D" parent="Player" index="1"]

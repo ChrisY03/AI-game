@@ -23,19 +23,7 @@ shape = SubResource("CapsuleShape3D_rtt6x")
 material_override = ExtResource("1_6305i")
 mesh = SubResource("CapsuleMesh_33uwf")
 
-[node name="MeshInstance3D2" type="MeshInstance3D" parent="CollisionShape3D"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.00641823, 0.585872, -0.380594)
-mesh = SubResource("BoxMesh_3ryrw")
-surface_material_override/0 = SubResource("StandardMaterial3D_ajgek")
-
 [node name="NavigationAgent3D" type="NavigationAgent3D" parent="."]
-
-[node name="RayCast3D" type="RayCast3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, -0.126575, 0.579371, -0.639258)
-
-[node name="Label3D" type="Label3D" parent="."]
-transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0.00152302, 1.15203, -0.00184846)
-text = "PATROL"
 
 [node name="WP1" type="Marker3D" parent="."]
 
@@ -44,3 +32,18 @@ text = "PATROL"
 [node name="WP3" type="Marker3D" parent="."]
 
 [node name="WP4" type="Marker3D" parent="."]
+
+[node name="Facing" type="Node3D" parent="."]
+
+[node name="MeshInstance3D2" type="MeshInstance3D" parent="Facing"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.00641823, 0.585872, -0.380594)
+mesh = SubResource("BoxMesh_3ryrw")
+skeleton = NodePath("../../CollisionShape3D")
+surface_material_override/0 = SubResource("StandardMaterial3D_ajgek")
+
+[node name="Label3D" type="Label3D" parent="Facing"]
+transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0.00152302, 1.15203, -0.00184846)
+text = "PATROL"
+
+[node name="RayCast3D" type="RayCast3D" parent="Facing"]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, -0.126575, 0.579371, -0.639258)

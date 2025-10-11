@@ -104,6 +104,12 @@ shape = SubResource("BoxShape3D_osij7")
 
 [node name="Guard" parent="WorldEnvironment" instance=ExtResource("2_xf5q3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.65442, -3.43779)
+move_speed = null
+fov = null
+losRange = null
+susDecay = null
+susRise = null
+losLoseGrace = null
 
 [node name="WP1" parent="WorldEnvironment/Guard" index="2"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -15.8229, -0.411844, 16.73)
@@ -116,9 +122,6 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.4184, -0.411844, 3.74036)
 
 [node name="WP4" parent="WorldEnvironment/Guard" index="5"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -15.7394, -5.40702, -18.1447)
-
-[node name="RayCast3D" parent="WorldEnvironment/Guard/Facing" index="2"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.126575, 0.579371, -0.639258)
 
 [node name="Player" parent="." instance=ExtResource("3_0ny4l")]
 
