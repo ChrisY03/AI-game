@@ -1,13 +1,13 @@
 extends CharacterBody3D
 
 
-@export var move_speed := 3
-@export var fov := 120
-@export var losRange := 20
-@export var susDecay := 0.35
-@export var susRise := 0.8
-@export var losLoseGrace := 1.0
-@export var turn_speed := 8.0   # tweak 5–12
+@export var move_speed: float = 3.0
+@export var fov: float = 180.0
+@export var losRange: float = 20.0
+@export var susDecay: float = 0.35
+@export var susRise: float = 0.8
+@export var losLoseGrace: float = 1.0
+@export var turn_speed: float = 8.0
 
 @onready var agent: NavigationAgent3D = $NavigationAgent3D
 @onready var facing: Node3D = $Facing
@@ -26,7 +26,8 @@ var player: Node3D
 
 enum State {PATROL, SUSPICIOUS, CHASE, SEARCH}
 var state := State.PATROL
-var face_dir := Vector3.ZERO
+var last_face_dir: Vector3 = Vector3(0, 0, -1)  # remember last valid facing
+
 
 func _ready() -> void:
 	# Gather waypoint positions from child Markers named WP*
@@ -48,26 +49,30 @@ func _ready() -> void:
 func _physics_process(delta: float) -> void:
 	_perceive(delta)
 	_state_logic(delta)
-	# If we’ve reached the current target, move to next
-		
+	if player == null: player = get_tree().get_first_node_in_group("player")
+
+	# Decide target per state (no facing here; we do it after movement)
 	match state:
 		State.PATROL:
 			if agent.is_navigation_finished():
 				idx = (idx + 1) % patrol_points.size()
-				agent.target_position=patrol_points[idx]
-				face_dir = agent.get_next_path_position() - global_transform.origin
+				agent.target_position = patrol_points[idx]
+
 		State.SUSPICIOUS:
-			var tgt: Variant = investigateTarget if investigateTarget != Vector3.ZERO else (player.global_transform.origin if player else Vector3.ZERO)
+			var tgt := Vector3.ZERO
+			if investigateTarget != Vector3.ZERO:
+				tgt = investigateTarget
+			elif player:
+				tgt = player.global_transform.origin
 			if tgt != Vector3.ZERO:
 				agent.target_position = tgt
-				face_dir = agent.get_next_path_position() - global_transform.origin
-			else: face_dir = agent.get_next_path_position() - global_transform.origin
+
 		State.CHASE:
 			if player:
 				agent.target_position = player.global_transform.origin
-				face_dir = player.global_transform.origin - global_transform.origin
+
 		State.SEARCH:
-			face_dir = agent.get_next_path_position() - global_transform.origin
+			# (we'll add search pathing later)
 			pass
 
 	# Move toward the next path position
@@ -80,17 +85,44 @@ func _physics_process(delta: float) -> void:
 	else:
 		velocity.x = lerpf(velocity.x, 0.0, 0.2)
 		velocity.z = lerpf(velocity.z, 0.0, 0.2)
-		
-	face_dir.y = 0.0
-	if face_dir.length() > 0.01:
-		var target_yaw := atan2(-face_dir.x, -face_dir.z)   # forward = -Z
-		facing.rotation.y = lerp_angle(facing.rotation.y, target_yaw, turn_speed * delta)
 
+	# --- Smooth facing with robust fallbacks (never zero) ---
+	var cand := Vector3.ZERO
+
+	# 1) Highest priority in CHASE: look at player
+	if state == State.CHASE and player:
+		cand = player.global_transform.origin - global_transform.origin
+
+	# 2) Else, if we're actually moving, face movement velocity
+	if cand.length() < 0.01:
+		var vel2d = Vector3(velocity.x, 0.0, velocity.z)
+		if vel2d.length() > 0.05:
+			cand = vel2d
+
+	# 3) Else, face the next path position
+	if cand.length() < 0.01:
+		cand = agent.get_next_path_position() - global_transform.origin
+
+	# 4) Else, face the target position itself
+	if cand.length() < 0.01:
+		cand = agent.target_position - global_transform.origin
+
+	# 5) Else, keep current forward (prevents snaps)
+	if cand.length() < 0.01:
+		cand = -facing.global_transform.basis.z  # current forward
+
+	# Apply yaw lerp (forward = -Z)
+	cand.y = 0.0
+	if cand.length() > 0.001:
+		cand = cand.normalized()
+		var target_yaw := atan2(-cand.x, -cand.z)
+		facing.rotation.y = lerp_angle(facing.rotation.y, target_yaw, turn_speed * delta)
 
 	velocity.y = 0.0
 	move_and_slide()
-	
-	label.text = ["PATROL","SUSPICIOUS","CHASE","SEARCH"][state] + "  S:" + str(snappedf(suspicion,0.01))
+
+	label.text = ["PATROL","SUSPICIOUS","CHASE","SEARCH"][state] + "  S:" + str(snappedf(suspicion, 0.01))
+
 	
 
 func _perceive(delta):

@@ -1,25 +1,45 @@
 [gd_scene load_steps=6 format=3 uid="uid://dts1rqcw4f4af"]
 
-[ext_resource type="Script" path="res://scripts/player_move.gd" id="1_6vchf"]
-[ext_resource type="Script" path="res://assets/camera_3d.gd" id="2_ksrth"]
+[ext_resource type="Script" path="res://scripts/HoverCapsule.gd" id="1_ttux4"]
+[ext_resource type="Material" uid="uid://bd485286tgxdg" path="res://materials/blue.tres" id="2_dvtmf"]
 
-[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_vfoh7"]
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_jcede"]
 
-[sub_resource type="CapsuleMesh" id="CapsuleMesh_4p1no"]
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_wsieo"]
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_s5gk4"]
+[sub_resource type="BoxMesh" id="BoxMesh_you8r"]
 
-[node name="Player" type="CharacterBody3D" groups=["player"]]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.93544, 0)
-script = ExtResource("1_6vchf")
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
-shape = SubResource("CapsuleShape3D_vfoh7")
-
-[node name="Camera3D" type="Camera3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 11.2082, -0.202619)
-script = ExtResource("2_ksrth")
+[node name="PlayerHover" type="RigidBody3D" node_paths=PackedStringArray("yaw", "pitch", "cam", "hover_ray") groups=["player"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.93684, 0)
+axis_lock_angular_x = true
+axis_lock_angular_z = true
+mass = 75.0
+can_sleep = false
+continuous_cd = true
+script = ExtResource("1_ttux4")
+yaw = NodePath("Yaw")
+pitch = NodePath("Yaw/Pitch")
+cam = NodePath("Yaw/Pitch/Camera3D")
+hover_ray = NodePath("HoverRay")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="."]
-mesh = SubResource("CapsuleMesh_4p1no")
-surface_material_override/0 = SubResource("StandardMaterial3D_s5gk4")
+mesh = SubResource("CapsuleMesh_jcede")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("CapsuleShape3D_wsieo")
+
+[node name="HoverRay" type="RayCast3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.943893, 0)
+target_position = Vector3(0, -2.5, 0)
+
+[node name="Yaw" type="Node3D" parent="."]
+
+[node name="Pitch" type="Node3D" parent="Yaw"]
+
+[node name="Camera3D" type="Camera3D" parent="Yaw/Pitch"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.560699, -0.774279)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Yaw/Pitch"]
+transform = Transform3D(0.69, 0, 0, 0, -0.195, 0, 0, 0, 0.25, 0, 0.594831, -0.411697)
+material_override = ExtResource("2_dvtmf")
+mesh = SubResource("BoxMesh_you8r")
