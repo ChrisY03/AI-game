@@ -23,13 +23,14 @@ cam = NodePath("Yaw/Pitch/Camera3D")
 hover_ray = NodePath("HoverRay")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.7, 0, 0, 0, 1, 0, 0.314663, 0)
 mesh = SubResource("CapsuleMesh_jcede")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
 shape = SubResource("CapsuleShape3D_wsieo")
 
 [node name="HoverRay" type="RayCast3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.943893, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.443987, 0)
 target_position = Vector3(0, -2.5, 0)
 
 [node name="Yaw" type="Node3D" parent="."]
