@@ -1,0 +1,44 @@
+[gd_scene load_steps=7 format=3 uid="uid://ceqkgqnynw557"]
+
+[ext_resource type="Material" uid="uid://bjpg1ayxeeek1" path="res://materials/grey.tres" id="1_kydm2"]
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_b7ogu"]
+radius = 1.028
+height = 3.364
+
+[sub_resource type="BoxMesh" id="BoxMesh_42601"]
+size = Vector3(0.205, 0.24, 2.96)
+
+[sub_resource type="BoxMesh" id="BoxMesh_sgx7j"]
+size = Vector3(0.235, 6, 0.02)
+
+[sub_resource type="BoxMesh" id="BoxMesh_kkl24"]
+size = Vector3(0.8, 1.5, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_83g8w"]
+size = Vector3(0.425, 0.37, 3.755)
+
+[node name="body" type="MeshInstance3D"]
+transform = Transform3D(1, 0, 0, 0, 0.0713756, 0.99745, 0, -0.99745, 0.0713756, 0, 0.996575, 0.0759754)
+material_override = ExtResource("1_kydm2")
+mesh = SubResource("CapsuleMesh_b7ogu")
+
+[node name="stem" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.831419, 0.223326)
+material_override = ExtResource("1_kydm2")
+mesh = SubResource("BoxMesh_42601")
+
+[node name="prop" type="MeshInstance3D" parent="stem"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.0290697, 1.5768)
+material_override = ExtResource("1_kydm2")
+mesh = SubResource("BoxMesh_sgx7j")
+
+[node name="tail" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, -0.410448, -0.911884, 0, 0.911884, -0.410448, 0, -0.982034, 0.544868)
+material_override = ExtResource("1_kydm2")
+mesh = SubResource("BoxMesh_kkl24")
+
+[node name="tailback" type="MeshInstance3D" parent="tail"]
+transform = Transform3D(1, 0, 0, 0, 0.861, 0.508606, 0, -0.508606, 0.861, 0, 0.776416, 1.40398)
+material_override = ExtResource("1_kydm2")
+mesh = SubResource("BoxMesh_83g8w")
