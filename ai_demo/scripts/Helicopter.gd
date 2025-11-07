@@ -15,16 +15,18 @@ var player: Node3D
 var sweep_angle := 0.0
 
 func _ready():
+	# Collect all waypoint markers (named WP1, WP2, etc.)
 	for child in get_children():
 		if child is Marker3D and child.name.begins_with("WP"):
 			patrol_points.append(child.global_position)
+
 	if patrol_points.is_empty():
 		print("No patrol points found.")
 	else:
 		global_position = patrol_points[0]
-		
 		print("Loaded patrol points:", patrol_points.size())
 
+	# Spotlight setup
 	spotlight.light_energy = 2.0
 	spotlight.spot_range = detection_range
 	raycast.target_position = Vector3(0, 0, -detection_range)
@@ -35,30 +37,59 @@ func _physics_process(delta):
 		return
 
 	_move_between_points(delta)
-	_scan_for_player(delta)
+	_scan_for_player(delta) # <- this must be inside _physics_process, at this indentation level
 
 func _move_between_points(delta):
+	if patrol_points.is_empty():
+		return
+
+	# Ensure index is valid
+	current_point = clamp(current_point, 0, patrol_points.size() - 1)
 	var target = patrol_points[current_point]
+
+	# Calculate direction horizontally
 	var direction = target - global_position
-	if direction.length() < 1.0:
+	direction.y = 0
+	var distance = direction.length()
+
+	# Check if close enough to advance
+	if distance < 1.5:
 		current_point = (current_point + 1) % patrol_points.size()
-	else:
-		var move = direction.normalized() * move_speed * delta
-		global_position += move
-		var target_basis = Basis().looking_at(direction.normalized(), Vector3.UP)
+		print("➡️ Switching to waypoint:", current_point)
+		return  # Exit early this frame so we re-evaluate cleanly next time
+
+	# Maintain constant altitude
+	var desired_height := 20.0
+	global_position.y = lerpf(global_position.y, desired_height, delta * 2.0)
+
+	# Move toward target if there's distance left
+	if distance > 0.05:
+		var move_dir = direction.normalized()
+		global_position += move_dir * move_speed * delta
+
+		# Rotate smoothly toward movement direction (keep upright)
+		var up = Vector3.UP
+		var look_target = global_position + move_dir
+		var target_basis = Basis().looking_at(look_target, up)
 		global_transform.basis = global_transform.basis.slerp(target_basis, delta * turn_speed)
 
+
+# --- Light Sweep and Player Detection ---
 func _scan_for_player(delta):
 	if not player or not is_instance_valid(player):
 		return
 
+	# Sweep light back and forth
 	sweep_angle += delta * light_rotation_speed
 	var x = sin(sweep_angle)
 	var z = cos(sweep_angle)
 	var look_dir = Vector3(x, -0.3, z).normalized()
+
+	# Rotate spotlight pivot smoothly
 	var desired_basis = Basis().looking_at(look_dir, Vector3.UP)
 	light_pivot.global_transform.basis = light_pivot.global_transform.basis.slerp(desired_basis, delta * 3.0)
 
+	# Check if raycast detects player
 	raycast.force_raycast_update()
 	if raycast.is_colliding():
 		var hit = raycast.get_collider()
