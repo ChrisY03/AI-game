@@ -1,8 +1,9 @@
-[gd_scene load_steps=16 format=3 uid="uid://byr6nlvw4rb6t"]
+[gd_scene load_steps=17 format=3 uid="uid://byr6nlvw4rb6t"]
 
 [ext_resource type="Material" uid="uid://bd485286tgxdg" path="res://materials/blue.tres" id="2_7a1ix"]
 [ext_resource type="PackedScene" uid="uid://bkdeajec0vros" path="res://assets/guard.tscn" id="2_xf5q3"]
 [ext_resource type="PackedScene" uid="uid://dts1rqcw4f4af" path="res://assets/player.tscn" id="3_0ny4l"]
+[ext_resource type="PackedScene" uid="uid://ceqkgqnynw557" path="res://assets/heli.tscn" id="4_1bvp3"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_3gvf5"]
 
@@ -134,9 +135,9 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.0354087, 0.339218, -0.6392
 [node name="PlayerHover" parent="." instance=ExtResource("3_0ny4l")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.85961, 2.71136, 3.14965)
 mass = 3.0
-hover_height = 2.0
-accel_ground = 100.0
-max_speed = 50.0
+
+[node name="Helicopter" parent="." instance=ExtResource("4_1bvp3")]
+transform = Transform3D(1, 0, 0, 0, 0.0713756, 0.99745, 0, -0.99745, 0.0713756, 0, 20, 0)
 
 [editable path="WorldEnvironment/Guard"]
 [editable path="PlayerHover"]
