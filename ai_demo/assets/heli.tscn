@@ -71,3 +71,15 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7, 7, 0)
 
 [node name="WP4" type="Marker3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7, -7, 0)
+
+[node name="WP5" type="Marker3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14, 14, 0)
+
+[node name="WP6" type="Marker3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -14, -14, 0)
+
+[node name="WP7" type="Marker3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -14, 14, 0)
+
+[node name="WP8" type="Marker3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14, -14, 0)

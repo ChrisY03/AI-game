@@ -2,9 +2,9 @@ extends Node3D
 
 @export var move_speed: float = 6.0
 @export var turn_speed: float = 2.0
-@export var detection_range: float = 40.0
+@export var detection_range: float = 30.0      # shorter reach = smaller circle
 @export var light_rotation_speed: float = 1.0
-@export var light_sweep_angle_deg: float = 15.0     # narrower sweep
+@export var light_sweep_angle_deg: float = 12.0  # slightly tighter sweep
 @export var waypoint_threshold: float = 2.0
 @export var patrol_altitude: float = 20.0
 
@@ -33,10 +33,10 @@ func _ready():
 
 	# --- Spotlight setup ---
 	spotlight.visible = true
-	spotlight.light_energy = 5.0                    # slightly dimmer
-	spotlight.light_volumetric_fog_energy = 2.5     # balanced fog glow
+	spotlight.light_energy = 5.0
+	spotlight.light_volumetric_fog_energy = 2.0
 	spotlight.spot_range = detection_range
-	spotlight.spot_angle = 10.0                     # narrow cone = small circle
+	spotlight.spot_angle = 6.0                       # ✅ half of before
 	spotlight.shadow_enabled = true
 	spotlight.shadow_bias = 0.05
 	spotlight.shadow_normal_bias = 0.4
@@ -90,7 +90,7 @@ func _scan_for_player(delta):
 	if not player or not is_instance_valid(player):
 		return
 
-	# --- Subtle side-to-side sweep centered forward ---
+	# --- Centered, subtle sweep ---
 	sweep_angle += delta * light_rotation_speed
 	var sweep_limit = deg_to_rad(light_sweep_angle_deg)
 	var horizontal_angle = sin(sweep_angle) * sweep_limit
@@ -99,22 +99,22 @@ func _scan_for_player(delta):
 	var rotation = Basis(Vector3.UP, horizontal_angle)
 	var look_dir = (rotation * base_forward).normalized()
 
-	# Tilt down more to keep beam near the ground center
-	look_dir.y -= 0.7
+	# Aim slightly more downward to keep the smaller beam grounded
+	look_dir.y -= 0.75
 	look_dir = look_dir.normalized()
 
 	var desired_basis = Basis().looking_at(look_dir, Vector3.UP)
 	light_pivot.global_transform.basis = light_pivot.global_transform.basis.slerp(desired_basis, delta * 3.0)
 
 	# --- Gentle flicker for realism ---
-	spotlight.light_volumetric_fog_energy = 2.5 + sin(Time.get_ticks_msec() * 0.004) * 0.15
+	spotlight.light_volumetric_fog_energy = 2.0 + sin(Time.get_ticks_msec() * 0.004) * 0.1
 
 	# --- Raycast player detection ---
 	raycast.force_raycast_update()
 	if raycast.is_colliding():
 		var hit = raycast.get_collider()
 		if hit and hit.is_in_group("player"):
-			spotlight.light_energy = 7.0
+			spotlight.light_energy = 6.5
 			print("🚨 Player spotted!")
 		else:
 			spotlight.light_energy = 5.0
