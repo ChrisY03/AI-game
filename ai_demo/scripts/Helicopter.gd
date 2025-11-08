@@ -2,9 +2,9 @@ extends Node3D
 
 @export var move_speed: float = 6.0
 @export var turn_speed: float = 2.0
-@export var detection_range: float = 30.0      # shorter reach = smaller circle
+@export var detection_range: float = 30.0
 @export var light_rotation_speed: float = 1.0
-@export var light_sweep_angle_deg: float = 12.0  # slightly tighter sweep
+@export var light_sweep_angle_deg: float = 12.0
 @export var waypoint_threshold: float = 2.0
 @export var patrol_altitude: float = 20.0
 
@@ -16,6 +16,7 @@ var patrol_points: Array[Vector3] = []
 var current_point := 0
 var player: Node3D
 var sweep_angle := 0.0
+var player_caught := false
 
 
 func _ready():
@@ -36,7 +37,7 @@ func _ready():
 	spotlight.light_energy = 5.0
 	spotlight.light_volumetric_fog_energy = 2.0
 	spotlight.spot_range = detection_range
-	spotlight.spot_angle = 6.0                       # ✅ half of before
+	spotlight.spot_angle = 6.0
 	spotlight.shadow_enabled = true
 	spotlight.shadow_bias = 0.05
 	spotlight.shadow_normal_bias = 0.4
@@ -47,6 +48,9 @@ func _ready():
 
 
 func _physics_process(delta):
+	if player_caught:
+		return  # stop movement after capture
+
 	if patrol_points.is_empty():
 		return
 
@@ -90,7 +94,7 @@ func _scan_for_player(delta):
 	if not player or not is_instance_valid(player):
 		return
 
-	# --- Centered, subtle sweep ---
+	# --- Gentle side-to-side sweep ---
 	sweep_angle += delta * light_rotation_speed
 	var sweep_limit = deg_to_rad(light_sweep_angle_deg)
 	var horizontal_angle = sin(sweep_angle) * sweep_limit
@@ -99,14 +103,12 @@ func _scan_for_player(delta):
 	var rotation = Basis(Vector3.UP, horizontal_angle)
 	var look_dir = (rotation * base_forward).normalized()
 
-	# Aim slightly more downward to keep the smaller beam grounded
 	look_dir.y -= 0.75
 	look_dir = look_dir.normalized()
 
 	var desired_basis = Basis().looking_at(look_dir, Vector3.UP)
 	light_pivot.global_transform.basis = light_pivot.global_transform.basis.slerp(desired_basis, delta * 3.0)
 
-	# --- Gentle flicker for realism ---
 	spotlight.light_volumetric_fog_energy = 2.0 + sin(Time.get_ticks_msec() * 0.004) * 0.1
 
 	# --- Raycast player detection ---
@@ -114,12 +116,50 @@ func _scan_for_player(delta):
 	if raycast.is_colliding():
 		var hit = raycast.get_collider()
 		if hit and hit.is_in_group("player"):
-			spotlight.light_energy = 6.5
-			print("🚨 Player spotted!")
+			_on_player_detected()
+			return
 		else:
 			spotlight.light_energy = 5.0
 	else:
 		spotlight.light_energy = 5.0
+
+
+func _on_player_detected():
+	if player_caught:
+		return
+
+	player_caught = true
+	print("🚨 PLAYER CAUGHT 🚨")
+
+	spotlight.light_energy = 8.0
+	spotlight.light_volumetric_fog_energy = 4.0
+
+	# --- Freeze movement but allow UI ---
+	get_tree().paused = true
+
+	# --- Show on-screen message (ignores pause) ---
+	_show_game_over_ui()
+
+
+func _show_game_over_ui():
+	# Create a new CanvasLayer so it still displays when paused
+	var layer := CanvasLayer.new()
+	layer.pause_mode = Node.PAUSE_MODE_PROCESS
+	add_child(layer)
+
+	var label := Label.new()
+	label.text = "🚨 YOU WERE CAUGHT! 🚨"
+	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	label.add_theme_color_override("font_color", Color(1, 0, 0))
+	label.add_theme_font_size_override("font_size", 64)
+	label.anchor_left = 0.0
+	label.anchor_top = 0.0
+	label.anchor_right = 1.0
+	label.anchor_bottom = 1.0
+	label.grow_horizontal = Control.GROW_DIRECTION_BOTH
+	label.grow_vertical = Control.GROW_DIRECTION_BOTH
+	layer.add_child(label)
 
 
 func _exit_tree():
