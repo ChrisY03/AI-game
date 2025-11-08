@@ -48,9 +48,11 @@ mesh = SubResource("BoxMesh_83g8w")
 [node name="SearchLightPivot" type="Node3D" parent="."]
 
 [node name="SearchLight" type="SpotLight3D" parent="SearchLightPivot"]
-light_color = Color(1, 0.9647059, 0.8784314, 1)
-light_energy = 4.0
-spot_range = 40.0
+light_color = Color(0.9975652, 0.9798134, 0.9041132, 1)
+light_energy = 6.0
+light_volumetric_fog_energy = 6.0
+shadow_enabled = true
+spot_range = 60.0
 
 [node name="RayCast3D" type="RayCast3D" parent="SearchLightPivot/SearchLight"]
 target_position = Vector3(0, 0, -30)
