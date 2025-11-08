@@ -54,13 +54,13 @@ spot_range = 30.0
 target_position = Vector3(0, 0, -30)
 
 [node name="WP1" type="Marker3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.9493256, 20, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7, 7, 0)
 
 [node name="WP2" type="Marker3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10.449291, -4.931293, -1.1324883e-06)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7, -7, 0)
 
 [node name="WP3" type="Marker3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -15.59152, 2.1175337, -8.34465e-07)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7, 7, 0)
 
 [node name="WP4" type="Marker3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -24.57106, -19.910786, -1.7881393e-06)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7, -7, 0)
