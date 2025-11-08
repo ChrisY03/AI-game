@@ -72,7 +72,7 @@ func _move_between_points(delta):
 		var target_basis = Basis().looking_at(look_target, up)
 
 		# 1️⃣ Facing correction (adjust 90 / -90 / 180 if model direction differs)
-		var facing_offset = Basis(Vector3.UP, deg_to_rad(90))
+		var facing_offset = Basis(Vector3.UP, deg_to_rad(180))
 		target_basis = target_basis * facing_offset
 
 		# 2️⃣ Roll correction (fix tail vertical issue)
