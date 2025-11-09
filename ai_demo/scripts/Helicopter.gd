@@ -1,172 +1,101 @@
 extends Node3D
 
-@export var move_speed: float = 6.0
-@export var turn_speed: float = 2.0
-@export var detection_range: float = 30.0
-@export var light_rotation_speed: float = 1.0
-@export var light_sweep_angle_deg: float = 12.0
-@export var waypoint_threshold: float = 2.0
-@export var patrol_altitude: float = 20.0
+@export var patrol_points: Array[NodePath] = []
+@export var speed: float = 10.0
+@export var rotation_speed: float = 3.0
+@export var detection_range: float = 25.0
+@export var detection_angle: float = 45.0
+@export var search_duration: float = 3.0
 
-@onready var spotlight: SpotLight3D = $SearchLightPivot/SearchLight
-@onready var light_pivot: Node3D = $SearchLightPivot
-@onready var raycast: RayCast3D = $SearchLightPivot/SearchLight/RayCast3D
+var player: Node3D = null
+var raycast: RayCast3D = null
+var current_target_index: int = 0
+var player_caught: bool = false
+var searching: bool = false
+var search_timer: float = 0.0
 
-var patrol_points: Array[Vector3] = []
-var current_point := 0
-var player: Node3D
-var sweep_angle := 0.0
-var player_caught := false
-
-
-func _ready():
-	# --- Collect patrol waypoints ---
-	for child in get_children():
-		if child is Marker3D and child.name.begins_with("WP"):
-			patrol_points.append(child.global_position)
-
-	if patrol_points.is_empty():
-		push_warning("⚠️ No patrol points found for helicopter!")
-		return
-	else:
-		global_position = patrol_points[0]
-		print("🚁 Loaded", patrol_points.size(), "waypoints.")
-
-	# --- Spotlight setup ---
-	spotlight.visible = true
-	spotlight.light_energy = 5.0
-	spotlight.light_volumetric_fog_energy = 2.0
-	spotlight.spot_range = detection_range
-	spotlight.spot_angle = 6.0
-	spotlight.shadow_enabled = true
-	spotlight.shadow_bias = 0.05
-	spotlight.shadow_normal_bias = 0.4
-	spotlight.light_color = Color(1.0, 0.97, 0.9)
-
-	raycast.target_position = Vector3(0, 0, -detection_range)
+func _ready() -> void:
+	print("🚁 Helicopter ready.")
+	raycast = $SearchLightPivot/SearchLight/RayCast3D
 	player = get_tree().get_first_node_in_group("player")
 
-
-func _physics_process(delta):
-	if player_caught:
-		return  # stop movement after capture
+	# Godot 4.5+ replaces pause_mode with process_mode
+	process_mode = Node.PROCESS_MODE_ALWAYS
 
 	if patrol_points.is_empty():
+		push_warning("No patrol points assigned for Helicopter.")
+	elif patrol_points.size() > 0:
+		global_position = get_node(patrol_points[current_target_index]).global_position
+
+func _physics_process(delta: float) -> void:
+	if player_caught:
+		return
+
+	if patrol_points.is_empty():
+		return
+	
+	if searching:
+		search_timer -= delta
+		if search_timer <= 0.0:
+			searching = false
 		return
 
 	_move_between_points(delta)
-	_scan_for_player(delta)
+	_detect_player()
 
+func _move_between_points(delta: float) -> void:
+	var target_node: Node3D = get_node(patrol_points[current_target_index])
+	var target_position: Vector3 = target_node.global_position
+	var direction: Vector3 = (target_position - global_position).normalized()
+	
+	# Move toward the next patrol point
+	global_position += direction * speed * delta
 
-func _move_between_points(delta):
-	var target = patrol_points[current_point]
-	var direction = target - global_position
-	direction.y = 0
-	var distance = direction.length()
+	# Smooth rotation toward movement direction (use static Basis.looking_at)
+	var target_basis := Basis.looking_at(direction, Vector3.UP)
+	var facing_offset := Basis(Vector3.UP, deg_to_rad(180))
+	target_basis *= facing_offset
 
-	if distance < waypoint_threshold:
-		current_point = (current_point + 1) % patrol_points.size()
-		print("➡️ Switching to waypoint:", current_point)
+	var roll_offset := Basis(Vector3.FORWARD, deg_to_rad(-90))
+	target_basis *= roll_offset
+
+	global_transform.basis = global_transform.basis.slerp(target_basis, rotation_speed * delta)
+
+	# If close to point, switch to next one
+	if global_position.distance_to(target_position) < 1.0:
+		current_target_index = (current_target_index + 1) % patrol_points.size()
+		searching = true
+		search_timer = search_duration
+		print("🔄 Next patrol point:", current_target_index)
+
+func _detect_player() -> void:
+	if not is_instance_valid(player):
 		return
-
-	global_position.y = lerpf(global_position.y, patrol_altitude, delta * 2.0)
-
-	if distance > 0.05:
-		var move_dir = direction.normalized()
-		global_position += move_dir * move_speed * delta
-
-		var up = Vector3.UP
-		var look_target = global_position + move_dir
-		var target_basis = Basis().looking_at(look_target, up)
-
-		var facing_offset = Basis(Vector3.UP, deg_to_rad(180))
-		target_basis = target_basis * facing_offset
-
-		var roll_offset = Basis(Vector3.FORWARD, deg_to_rad(-90))
-		target_basis = target_basis * roll_offset
-
-		global_transform.basis = global_transform.basis.slerp(target_basis, delta * turn_speed)
-
-
-func _scan_for_player(delta):
-	if not is_instance_valid(raycast) or not is_instance_valid(spotlight):
+	
+	var to_player := player.global_position - global_position
+	var distance := to_player.length()
+	if distance > detection_range:
 		return
-	if not player or not is_instance_valid(player):
-		return
+	
+	var forward := -global_transform.basis.z
+	var angle := rad_to_deg(acos(clamp(forward.dot(to_player.normalized()), -1.0, 1.0)))
+	if angle < detection_angle:
+		# RayCast3D.target_position is in LOCAL space
+		if is_instance_valid(raycast):
+			raycast.target_position = raycast.to_local(player.global_position)
+			raycast.force_raycast_update()
+			if not raycast.is_colliding() or raycast.get_collider() == player:
+				_on_player_detected()
 
-	# --- Gentle side-to-side sweep ---
-	sweep_angle += delta * light_rotation_speed
-	var sweep_limit = deg_to_rad(light_sweep_angle_deg)
-	var horizontal_angle = sin(sweep_angle) * sweep_limit
-
-	var base_forward = -global_transform.basis.z
-	var rotation = Basis(Vector3.UP, horizontal_angle)
-	var look_dir = (rotation * base_forward).normalized()
-
-	look_dir.y -= 0.75
-	look_dir = look_dir.normalized()
-
-	var desired_basis = Basis().looking_at(look_dir, Vector3.UP)
-	light_pivot.global_transform.basis = light_pivot.global_transform.basis.slerp(desired_basis, delta * 3.0)
-
-	spotlight.light_volumetric_fog_energy = 2.0 + sin(Time.get_ticks_msec() * 0.004) * 0.1
-
-	# --- Raycast player detection ---
-	raycast.force_raycast_update()
-	if raycast.is_colliding():
-		var hit = raycast.get_collider()
-		if hit and hit.is_in_group("player"):
-			_on_player_detected()
-			return
-		else:
-			spotlight.light_energy = 5.0
-	else:
-		spotlight.light_energy = 5.0
-
-
-func _on_player_detected():
+func _on_player_detected() -> void:
 	if player_caught:
 		return
-
 	player_caught = true
-	print("🚨 PLAYER CAUGHT 🚨")
+	print("🚨 Player detected by helicopter!")
 
-	spotlight.light_energy = 8.0
-	spotlight.light_volumetric_fog_energy = 4.0
-
-	# --- Freeze movement but allow UI ---
-	get_tree().paused = true
-
-	# --- Show on-screen message (ignores pause) ---
-	_show_game_over_ui()
-
-
-func _show_game_over_ui():
-	# Create a new CanvasLayer so it still displays when paused
-	var layer := CanvasLayer.new()
-	layer.pause_mode = Node.PAUSE_MODE_PROCESS
-	add_child(layer)
-
-	var label := Label.new()
-	label.text = "🚨 YOU WERE CAUGHT! 🚨"
-	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	label.add_theme_color_override("font_color", Color(1, 0, 0))
-	label.add_theme_font_size_override("font_size", 64)
-	label.anchor_left = 0.0
-	label.anchor_top = 0.0
-	label.anchor_right = 1.0
-	label.anchor_bottom = 1.0
-	label.grow_horizontal = Control.GROW_DIRECTION_BOTH
-	label.grow_vertical = Control.GROW_DIRECTION_BOTH
-	layer.add_child(label)
-
-
-func _exit_tree():
-	print("🛑 Helicopter exiting scene, cleaning up...")
+func _exit_tree() -> void:
+	print("❌ Helicopter exiting scene, cleaning up...")
 	if is_instance_valid(raycast):
 		raycast.enabled = false
 	raycast = null
-	spotlight = null
-	light_pivot = null
 	player = null
