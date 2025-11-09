@@ -3,7 +3,15 @@
 [ext_resource type="Material" uid="uid://bd485286tgxdg" path="res://materials/blue.tres" id="2_7a1ix"]
 [ext_resource type="PackedScene" uid="uid://bkdeajec0vros" path="res://assets/guard.tscn" id="2_xf5q3"]
 [ext_resource type="PackedScene" uid="uid://dts1rqcw4f4af" path="res://assets/player.tscn" id="3_0ny4l"]
+<<<<<<< Updated upstream
 [ext_resource type="PackedScene" uid="uid://ceqkgqnynw557" path="res://assets/heli.tscn" id="4_1bvp3"]
+=======
+<<<<<<< HEAD
+[ext_resource type="PackedScene" uid="uid://bnlpi6g6ffk0" path="res://assets/terrrain.tscn" id="4_wxt3y"]
+=======
+[ext_resource type="PackedScene" uid="uid://ceqkgqnynw557" path="res://assets/heli.tscn" id="4_1bvp3"]
+>>>>>>> 11a54a1094b988162cd098ca9f9495bbdd279d8d
+>>>>>>> Stashed changes
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_3gvf5"]
 
@@ -138,6 +146,12 @@ mass = 3.0
 
 [node name="Helicopter" parent="." instance=ExtResource("4_1bvp3")]
 transform = Transform3D(1, 0, 0, 0, 0.0713756, 0.99745, 0, -0.99745, 0.0713756, 0, 20, 0)
+<<<<<<< Updated upstream
+=======
+
+[node name="Terrrain" parent="." instance=ExtResource("4_wxt3y")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 65, -3, -29)
+>>>>>>> Stashed changes
 
 [editable path="WorldEnvironment/Guard"]
 [editable path="PlayerHover"]

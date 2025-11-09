@@ -1,0 +1,23 @@
+[gd_scene load_steps=5 format=3 uid="uid://bnlpi6g6ffk0"]
+
+[ext_resource type="PackedScene" uid="uid://c8e4s2rbk8v2b" path="res://assets/terrain/realterrain.glb" id="1_rustk"]
+[ext_resource type="Shader" uid="uid://bmp53q3w6lj6d" path="res://terrainshader.tres" id="2_7rfp0"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_ogt6v"]
+render_priority = 0
+shader = ExtResource("2_7rfp0")
+
+[sub_resource type="HeightMapShape3D" id="HeightMapShape3D_2ylgn"]
+
+[node name="Terrrain" type="Node3D"]
+
+[node name="realterrain" parent="." instance=ExtResource("1_rustk")]
+
+[node name="Plane" parent="realterrain" index="0"]
+material_override = SubResource("ShaderMaterial_ogt6v")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="realterrain/Plane" index="0"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.01, 0.01, 0.02)
+shape = SubResource("HeightMapShape3D_2ylgn")
+
+[editable path="realterrain"]
