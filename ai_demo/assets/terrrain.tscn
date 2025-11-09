@@ -1,7 +1,7 @@
-[gd_scene load_steps=5 format=3 uid="uid://bnlpi6g6ffk0"]
+[gd_scene load_steps=5 format=3 uid="uid://7euoh16b18l"]
 
 [ext_resource type="PackedScene" uid="uid://c8e4s2rbk8v2b" path="res://assets/terrain/realterrain.glb" id="1_rustk"]
-[ext_resource type="Shader" uid="uid://bmp53q3w6lj6d" path="res://terrainshader.tres" id="2_7rfp0"]
+[ext_resource type="Shader" path="res://terrainshader.tres" id="2_7rfp0"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_ogt6v"]
 render_priority = 0
