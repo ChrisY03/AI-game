@@ -8,7 +8,8 @@ extends CharacterBody3D
 @export var susRise: float = 0.8
 @export var losLoseGrace: float = 1.0
 @export var turn_speed: float = 8.0
-@export var visioncone:
+@export var wander_radius: float = 20.0
+@export var wander_interval: float = 3.0
 
 @onready var agent: NavigationAgent3D = $NavigationAgent3D
 @onready var facing: Node3D = $Facing
