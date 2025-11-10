@@ -230,3 +230,7 @@ func _on_vision_cone_3d_body_sighted(body: Node3D) -> void:
 		player_in_cone = true
 		print("Player sighted!", body.name)
 				
+
+
+func _on_vision_cone_3d_body_hidden(body: Node3D) -> void:
+	pass # Replace with function body.

@@ -23,6 +23,10 @@ Blackboard="*res://scripts/Blackboard.gd"
 
 version_control/autoload_on_startup=true
 
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/tattomoosa.vision_cone_3d/plugin.cfg")
+
 [global_group]
 
 player=""
