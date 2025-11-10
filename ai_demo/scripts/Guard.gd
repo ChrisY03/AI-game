@@ -26,10 +26,12 @@ var searchTtl : float
 var investigateTarget: Vector3 = Vector3.ZERO
 var player: Node3D
 
-enum State {PATROL, SUSPICIOUS, CHASE, SEARCH}
+enum State {PATROL, SUSPICIOUS, CHASE, SEARCH, WANDER}
 var state := State.PATROL
 var last_face_dir: Vector3 = Vector3(0, 0, -1)  # remember last valid facing
 
+var wander_timer := 0.0
+var wander_target: Vector3
 
 func _ready() -> void:
 	# Gather waypoint positions from child Markers named WP*
@@ -76,6 +78,14 @@ func _physics_process(delta: float) -> void:
 		State.SEARCH:
 			# (we'll add search pathing later)
 			pass
+			
+		State.WANDER:
+			# constantly explore random points
+			wander_timer -= delta
+			if wander_timer <= 0.0 or agent.is_navigation_finished():
+				wander_target = get_random_nav_point()
+				agent.target_position = wander_target
+				wander_timer = wander_interval
 
 	# Move toward the next path position
 	var next_pos = agent.get_next_path_position()
@@ -154,29 +164,69 @@ func _perceive(delta):
 			var proximity = 1.0 - clampf(d/float(n["radius"]), 0.0, 1.0)
 			suspicion = clampf(suspicion + 0.35 * proximity * delta, 0.0, 1.0)
 			investigateTarget = n["pos"]
+			if state in [State.PATROL, State.WANDER]:
+				state = State.SUSPICIOUS
+				agent.target_position = n["pos"]
 	print("sus=", snappedf(suspicion, 0.01), " losT=", snappedf(lostLosTimer, 0.01))
 
 func _state_logic(delta:float) -> void:
 	match state:
 		State.PATROL:
-			if suspicion>0.35:
+			if player_in_cone:
+				state = State.CHASE
+				suspicion = 1.0
+			elif suspicion>0.35:
 				state=State.SUSPICIOUS
 		
 		State.SUSPICIOUS:
-			if suspicion > .7 and lostLosTimer < 0.5:
+			if player_in_cone:
+				state = State.CHASE
+				suspicion = 1.0
+			elif suspicion > 0.8:
+				state = State.CHASE
+				suspicion = 1.0
+			elif suspicion > .7 and lostLosTimer < 0.5:
 				state = State.CHASE
 			elif suspicion <= 0.0:
-				state = State.PATROL
+				state = State.WANDER
 			
 		State.CHASE:
-			if lostLosTimer > losLoseGrace:
+			if not player_in_cone and lostLosTimer > losLoseGrace:
 				state = State.SEARCH
 				searchTtl = 8.0
+		 
 				
 		State.SEARCH:
 			searchTtl -= delta
+			if player_in_cone:
+				state = State.CHASE
+				suspicion = 1.0
 			if lostLosTimer < 0.2 and suspicion > 0.35:
 				state = State.CHASE
 			elif searchTtl <= 0.0:
-				state = State.PATROL
+				state = State.WANDER
+		
+		State.WANDER:
+			if player_in_cone:
+				state = State.CHASE
+				suspicion = 1.0
+			elif suspicion > 0.35:
+				state = State.SUSPICIOUS
+		
+func get_random_nav_point() -> Vector3:
+				var origin = global_transform.origin
+				var rand_dir = Vector3(
+					randf_range(-1, 1),
+					0,
+					randf_range(-1, 1)
+				).normalized() * randf_range(5, wander_radius)
+				return origin + rand_dir
+				
+				
+var player_in_cone: bool = false
+
+func _on_vision_cone_3d_body_sighted(body: Node3D) -> void:
+	if body.is_in_group("player"):
+		player_in_cone = true
+		print("Player sighted!", body.name)
 				
