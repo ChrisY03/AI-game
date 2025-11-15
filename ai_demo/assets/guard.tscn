@@ -1,7 +1,7 @@
 [gd_scene load_steps=7 format=3 uid="uid://bkdeajec0vros"]
 
 [ext_resource type="Material" uid="uid://c4wwd83fnrqe4" path="res://materials/red.tres" id="1_6305i"]
-[ext_resource type="Script" uid="uid://cq0b050kv3uxy" path="res://scripts/Guard.gd" id="1_r8jo8"]
+[ext_resource type="Script" path="res://scripts/Guard.gd" id="1_r8jo8"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_rtt6x"]
 

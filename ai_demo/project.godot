@@ -11,8 +11,8 @@ config_version=5
 [application]
 
 config/name="AI_Demo"
-run/main_scene="uid://byr6nlvw4rb6t"
-config/features=PackedStringArray("4.5", "Forward Plus")
+run/main_scene="res://addons/tattomoosa.vision_cone_3d/examples/demo.tscn"
+config/features=PackedStringArray("4.3", "Forward Plus")
 config/icon="res://icon.svg"
 
 [autoload]
@@ -26,6 +26,10 @@ version_control/autoload_on_startup=true
 [editor_plugins]
 
 enabled=PackedStringArray("res://addons/tattomoosa.vision_cone_3d/plugin.cfg")
+
+[filesystem]
+
+import/blender/enabled=false
 
 [global_group]
 
