@@ -2,7 +2,7 @@
 
 [ext_resource type="Material" uid="uid://c4wwd83fnrqe4" path="res://materials/red.tres" id="1_6305i"]
 [ext_resource type="Script" path="res://scripts/Guard.gd" id="1_r8jo8"]
-[ext_resource type="PackedScene" uid="uid://brqivkckug8uc" path="res://addons/tattomoosa.vision_cone_3d/examples/example_src/observer.tscn" id="3_7bm07"]
+[ext_resource type="Script" path="res://addons/tattomoosa.vision_cone_3d/src/VisionCone3D.gd" id="3_agl3b"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_rtt6x"]
 
@@ -49,9 +49,12 @@ text = "PATROL"
 [node name="RayCast3D" type="RayCast3D" parent="Facing"]
 transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0.00750935, 0.235567, -0.639258)
 
-[node name="Observer" parent="Facing" instance=ExtResource("3_7bm07")]
-
 [node name="SpotLight3D" type="SpotLight3D" parent="Facing"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.399593, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.57454, -0.765155)
+light_energy = 1.955
 spot_range = 12.599
 spot_angle = 25.0
+
+[node name="VisionCone3D" type="Area3D" parent="Facing"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.596743, -0.936384)
+script = ExtResource("3_agl3b")

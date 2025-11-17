@@ -1,5 +1,8 @@
 extends CharacterBody3D
 
+@export var gravity: float = ProjectSettings.get_setting("physics/3d/default_gravity") as float
+@export var floor_snap: float = 0.5         # how “sticky” you are to slopes (meters)
+@export var max_slope_deg: float = 50.0     # allowed walkable slope
 
 @export var move_speed: float = 3.0
 @export var fov: float = 180.0
@@ -34,12 +37,14 @@ var wander_timer := 0.0
 var wander_target: Vector3
 
 func _ready() -> void:
-	# Gather waypoint positions from child Markers named WP*
+	floor_snap_length = floor_snap
+	floor_max_angle = deg_to_rad(max_slope_deg)  
+
 	for c in get_children():
 		if c is Marker3D and c.name.begins_with("WP"):
 			patrol_points.append(c.global_transform.origin)
 	if patrol_points.is_empty():
-		push_warning("Guard has no WP markers; generating a small square near origin.")
+		push_warning("Guard has no WP markers")
 		var o = global_transform.origin
 		patrol_points = [o + Vector3(6,0,0), o + Vector3(6,0,6), o + Vector3(0,0,6), o]
 
@@ -88,8 +93,11 @@ func _physics_process(delta: float) -> void:
 				wander_timer = wander_interval
 
 	# Move toward the next path position
+# Move toward the next path position (horizontal intent)
 	var next_pos = agent.get_next_path_position()
 	var to_next = next_pos - global_transform.origin
+	to_next.y = 0.0
+
 	if to_next.length() > 0.05:
 		var dir = to_next.normalized()
 		velocity.x = dir.x * move_speed
@@ -98,42 +106,21 @@ func _physics_process(delta: float) -> void:
 		velocity.x = lerpf(velocity.x, 0.0, 0.2)
 		velocity.z = lerpf(velocity.z, 0.0, 0.2)
 
-	# --- Smooth facing with robust fallbacks (never zero) ---
-	var cand := Vector3.ZERO
+	# Gravity (don't zero Y!)
+	if not is_on_floor():
+		velocity.y -= gravity * delta
+	else:
+		# stick-to-ground so you don't hover on downslopes
+		if velocity.y > 0.0:
+			velocity.y = 0.0
+		velocity.y -= gravity * delta * 0.1
 
-	# 1) Highest priority in CHASE: look at player
-	if state == State.CHASE and player:
-		cand = player.global_transform.origin - global_transform.origin
-
-	# 2) Else, if we're actually moving, face movement velocity
-	if cand.length() < 0.01:
-		var vel2d = Vector3(velocity.x, 0.0, velocity.z)
-		if vel2d.length() > 0.05:
-			cand = vel2d
-
-	# 3) Else, face the next path position
-	if cand.length() < 0.01:
-		cand = agent.get_next_path_position() - global_transform.origin
-
-	# 4) Else, face the target position itself
-	if cand.length() < 0.01:
-		cand = agent.target_position - global_transform.origin
-
-	# 5) Else, keep current forward (prevents snaps)
-	if cand.length() < 0.01:
-		cand = -facing.global_transform.basis.z  # current forward
-
-	# Apply yaw lerp (forward = -Z)
-	cand.y = 0.0
-	if cand.length() > 0.001:
-		cand = cand.normalized()
-		var target_yaw := atan2(-cand.x, -cand.z)
-		facing.rotation.y = lerp_angle(facing.rotation.y, target_yaw, turn_speed * delta)
-
-	velocity.y = 0.0
 	move_and_slide()
 
-	label.text = ["PATROL","SUSPICIOUS","CHASE","SEARCH"][state] + "  S:" + str(snappedf(suspicion, 0.01))
+
+	label.text = ["PATROL","SUSPICIOUS","CHASE","SEARCH","WANDER"][state] \
+		+ "  S:" + str(snappedf(suspicion, 0.01))
+
 
 	
 
@@ -233,4 +220,5 @@ func _on_vision_cone_3d_body_sighted(body: Node3D) -> void:
 
 
 func _on_vision_cone_3d_body_hidden(body: Node3D) -> void:
-	pass # Replace with function body.
+	if body.is_in_group("player"):
+		player_in_cone = false
