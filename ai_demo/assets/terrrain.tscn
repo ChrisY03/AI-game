@@ -20,20 +20,20 @@ sky_material = SubResource("PanoramaSkyMaterial_0gk4w")
 background_mode = 2
 sky = SubResource("Sky_5larw")
 ambient_light_source = 3
-ambient_light_color = Color(0.32517, 0.369708, 0.711514, 1)
+ambient_light_color = Color(0.656285, 0.703145, 0.922019, 1)
 ambient_light_sky_contribution = 0.5
 ambient_light_energy = 0.0
 tonemap_mode = 2
 glow_enabled = true
 fog_enabled = true
-fog_light_color = Color(0.166179, 0.116174, 0.517655, 1)
+fog_light_color = Color(0.0352941, 0.219608, 0.470588, 1)
 fog_light_energy = 0.53
 fog_sky_affect = 0.175
 volumetric_fog_enabled = true
 volumetric_fog_density = 0.001
-volumetric_fog_albedo = Color(0.280024, 0.352933, 0.686944, 1)
-volumetric_fog_emission = Color(0.607663, 0.670286, 0.911247, 1)
-volumetric_fog_emission_energy = 0.0
+volumetric_fog_albedo = Color(0.00392157, 0.196078, 0.415686, 1)
+volumetric_fog_emission = Color(0.00392157, 0.196078, 0.419608, 1)
+volumetric_fog_emission_energy = 0.05
 volumetric_fog_detail_spread = 3.36358
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_n32b2"]

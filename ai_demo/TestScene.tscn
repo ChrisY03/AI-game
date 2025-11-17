@@ -1,8 +1,9 @@
-[gd_scene load_steps=4 format=3 uid="uid://b4o3xticqvlmr"]
+[gd_scene load_steps=5 format=3 uid="uid://b4o3xticqvlmr"]
 
 [ext_resource type="PackedScene" uid="uid://dts1rqcw4f4af" path="res://assets/player.tscn" id="1_qhx6n"]
 [ext_resource type="PackedScene" uid="uid://bkdeajec0vros" path="res://assets/guard.tscn" id="2_paj2h"]
 [ext_resource type="PackedScene" uid="uid://darvbvuei0n3b" path="res://assets/terrrain.tscn" id="3_8irme"]
+[ext_resource type="PackedScene" uid="uid://ceqkgqnynw557" path="res://assets/heli.tscn" id="4_l7h67"]
 
 [node name="Test Scene" type="Node3D"]
 
@@ -27,4 +28,11 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.47845, -5.46911, -71.933)
 [node name="Terrrain" parent="." instance=ExtResource("3_8irme")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.285622, -0.244715, -0.0728989)
 
+[node name="Helicopter" parent="." instance=ExtResource("4_l7h67")]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, -46.4076, 30.9648, 39.1953)
+
+[node name="SearchLight" parent="Helicopter/SearchLightPivot" index="0"]
+spot_angle = 35.0
+
 [editable path="Guard"]
+[editable path="Helicopter"]
