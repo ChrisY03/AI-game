@@ -1,5 +1,6 @@
-[gd_scene load_steps=14 format=3 uid="uid://darvbvuei0n3b"]
+[gd_scene load_steps=15 format=3 uid="uid://darvbvuei0n3b"]
 
+[ext_resource type="Texture2D" uid="uid://bvnftiehuol0v" path="res://materials/PSX_Nightsky_HDRI/PSX_NIGHTSKY.hdr" id="1_wn8xe"]
 [ext_resource type="Shader" path="res://assets/terrrain.gdshader" id="2_lttyv"]
 [ext_resource type="PackedScene" uid="uid://deitn2c678jqg" path="res://assets/terrainobject.glb" id="3_82jld"]
 [ext_resource type="Texture2D" uid="uid://dc7crcuj4knam" path="res://assets/PSX_Seamless_WildForestGrass_128px.png" id="3_rhiqy"]
@@ -8,24 +9,32 @@
 [ext_resource type="PackedScene" uid="uid://ds1tf50mh0sxp" path="res://assets/bush.tscn" id="6_gifh7"]
 [ext_resource type="PackedScene" uid="uid://bp27fdsr4rcvn" path="res://assets/wide_bush.tscn" id="7_jxrhl"]
 
-[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_qgo7d"]
-sky_horizon_color = Color(0.64625, 0.65575, 0.67075, 1)
-ground_horizon_color = Color(0.64625, 0.65575, 0.67075, 1)
+[sub_resource type="PanoramaSkyMaterial" id="PanoramaSkyMaterial_0gk4w"]
+panorama = ExtResource("1_wn8xe")
+energy_multiplier = 0.8
 
 [sub_resource type="Sky" id="Sky_5larw"]
-sky_material = SubResource("ProceduralSkyMaterial_qgo7d")
+sky_material = SubResource("PanoramaSkyMaterial_0gk4w")
 
 [sub_resource type="Environment" id="Environment_hj43a"]
+background_mode = 2
 sky = SubResource("Sky_5larw")
+ambient_light_source = 3
 ambient_light_color = Color(0.32517, 0.369708, 0.711514, 1)
-ambient_light_energy = 3.0
+ambient_light_sky_contribution = 0.5
+ambient_light_energy = 0.0
 tonemap_mode = 2
 glow_enabled = true
 fog_enabled = true
-fog_mode = 1
-fog_light_color = Color(0.32517, 0.369708, 0.711514, 1)
-fog_light_energy = 0.06
-fog_density = 1.0
+fog_light_color = Color(0.166179, 0.116174, 0.517655, 1)
+fog_light_energy = 0.53
+fog_sky_affect = 0.175
+volumetric_fog_enabled = true
+volumetric_fog_density = 0.001
+volumetric_fog_albedo = Color(0.280024, 0.352933, 0.686944, 1)
+volumetric_fog_emission = Color(0.607663, 0.670286, 0.911247, 1)
+volumetric_fog_emission_energy = 0.0
+volumetric_fog_detail_spread = 3.36358
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_n32b2"]
 render_priority = 0
@@ -57,7 +66,12 @@ polygons = [PackedInt32Array(728, 3, 78), PackedInt32Array(728, 79, 3), PackedIn
 environment = SubResource("Environment_hj43a")
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
-transform = Transform3D(-0.5, 0.682716, 0.532821, -0.866025, -0.394166, -0.307624, 4.73656e-16, -0.615249, 0.788333, 0, 11.4743, 0)
+transform = Transform3D(-0.258819, 0.683013, -0.683013, 1.28344e-08, 0.707107, 0.707107, 0.965926, 0.183013, -0.183013, 0, 11.4743, 0)
+light_color = Color(0.693178, 0.890003, 0.990934, 1)
+light_energy = 0.05
+light_indirect_energy = 0.0
+light_volumetric_fog_energy = 0.0
+light_bake_mode = 1
 
 [node name="Bush" parent="." instance=ExtResource("6_gifh7")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -42.5043, 16.2457, 60.6815)
