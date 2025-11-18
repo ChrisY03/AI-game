@@ -29,10 +29,11 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.47845, -5.46911, -71.933)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.285622, -0.244715, -0.0728989)
 
 [node name="Helicopter" parent="." instance=ExtResource("4_l7h67")]
-transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, -46.4076, 30.9648, 39.1953)
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 20, 0)
 
 [node name="SearchLight" parent="Helicopter/SearchLightPivot" index="0"]
-spot_angle = 35.0
+spot_range = 100.0
+spot_angle = 15.0
 
 [editable path="Guard"]
 [editable path="Helicopter"]
