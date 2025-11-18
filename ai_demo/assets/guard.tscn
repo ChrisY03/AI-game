@@ -50,10 +50,11 @@ text = "PATROL"
 transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0.00750935, 0.235567, -0.639258)
 
 [node name="SpotLight3D" type="SpotLight3D" parent="Facing"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.57454, -0.765155)
-light_energy = 1.955
+transform = Transform3D(1, 0, 0, 0, 0.984607, 0.174782, 0, -0.174782, 0.984607, 0, 0.729771, -0.643578)
+light_color = Color(0.999999, 0.997351, 0.486144, 1)
+light_energy = 3.0
 spot_range = 12.599
-spot_angle = 25.0
+spot_angle = 28.95
 
 [node name="VisionCone3D" type="Area3D" parent="Facing"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.596743, -0.936384)
