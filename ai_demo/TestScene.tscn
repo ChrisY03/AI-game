@@ -29,7 +29,13 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.47845, -5.46911, -71.933)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.285622, -0.244715, -0.0728989)
 
 [node name="Helicopter" parent="." instance=ExtResource("4_l7h67")]
-transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 20, 0)
+transform = Transform3D(1.5, 0, 0, 0, -6.556708e-08, 1.5, 0, -1.5, -6.556708e-08, 0, 40, 0)
+
+[node name="prop" parent="Helicopter/stem" index="0"]
+transform = Transform3D(0.93596125, -1.5390913e-08, 0.35210305, 1.5390913e-08, 1, 2.799224e-09, -0.35210305, 2.7992226e-09, 0.93596125, 0, -0.029069781, 1.5198517)
+
+[node name="tailback" parent="Helicopter/tail" index="0"]
+transform = Transform3D(1, 0, 0, 0, 0.8609995, 0.5086058, 0, -0.5086058, 0.8609995, 0, 0.776416, 1.40398)
 
 [node name="SearchLight" parent="Helicopter/SearchLightPivot" index="0"]
 spot_range = 100.0
