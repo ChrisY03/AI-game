@@ -1,0 +1,85 @@
+[gd_scene load_steps=8 format=3 uid="uid://ceqkgqnynw557"]
+
+[ext_resource type="Material" uid="uid://bjpg1ayxeeek1" path="res://materials/grey.tres" id="1_kydm2"]
+[ext_resource type="Script" path="res://scripts/Helicopter.gd" id="2_gtk7b"]
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_b7ogu"]
+radius = 1.028
+height = 3.364
+
+[sub_resource type="BoxMesh" id="BoxMesh_42601"]
+size = Vector3(0.205, 0.24, 2.96)
+
+[sub_resource type="BoxMesh" id="BoxMesh_sgx7j"]
+size = Vector3(0.235, 6, 0.02)
+
+[sub_resource type="BoxMesh" id="BoxMesh_kkl24"]
+size = Vector3(0.8, 1.5, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_83g8w"]
+size = Vector3(0.425, 0.37, 3.755)
+
+[node name="Helicopter" type="MeshInstance3D"]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 0, 0)
+material_override = ExtResource("1_kydm2")
+mesh = SubResource("CapsuleMesh_b7ogu")
+script = ExtResource("2_gtk7b")
+
+[node name="stem" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.831419, 0.223326)
+material_override = ExtResource("1_kydm2")
+mesh = SubResource("BoxMesh_42601")
+
+[node name="prop" type="MeshInstance3D" parent="stem"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.0290697, 1.5768)
+material_override = ExtResource("1_kydm2")
+mesh = SubResource("BoxMesh_sgx7j")
+
+[node name="tail" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, -0.410448, -0.911884, 0, 0.911884, -0.410448, 0, -0.982034, 0.544868)
+material_override = ExtResource("1_kydm2")
+mesh = SubResource("BoxMesh_kkl24")
+
+[node name="tailback" type="MeshInstance3D" parent="tail"]
+transform = Transform3D(1, 0, 0, 0, 0.861, 0.508606, 0, -0.508606, 0.861, 0, 0.776416, 1.40398)
+material_override = ExtResource("1_kydm2")
+mesh = SubResource("BoxMesh_83g8w")
+
+[node name="SearchLightPivot" type="Node3D" parent="."]
+
+[node name="SearchLight" type="SpotLight3D" parent="SearchLightPivot"]
+light_color = Color(1, 0.986695, 0.954687, 1)
+light_energy = 25.0
+light_volumetric_fog_energy = 10.0
+shadow_enabled = true
+shadow_bias = 0.05
+spot_range = 200.0
+spot_attenuation = 0.6
+spot_angle = 1.0
+
+[node name="RayCast3D" type="RayCast3D" parent="SearchLightPivot/SearchLight"]
+target_position = Vector3(0, 0, -30)
+
+[node name="WP1" type="Marker3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7, 7, 0)
+
+[node name="WP2" type="Marker3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7, -7, 0)
+
+[node name="WP3" type="Marker3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7, 7, 0)
+
+[node name="WP4" type="Marker3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7, -7, 0)
+
+[node name="WP5" type="Marker3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14, 14, 0)
+
+[node name="WP6" type="Marker3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -14, -14, 0)
+
+[node name="WP7" type="Marker3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -14, 14, 0)
+
+[node name="WP8" type="Marker3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14, -14, 0)
