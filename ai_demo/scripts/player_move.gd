@@ -59,8 +59,12 @@ func _physics_process(delta: float) -> void:
 
 	# ---- Input (W forward) ----
 	var input_vec := Input.get_vector("move_left","move_right","move_back","move_forward")
-	var forward: Vector3 = -yaw.global_transform.basis.z; forward.y = 0.0; forward = forward.normalized()
-	var right:   Vector3 =  yaw.global_transform.basis.x; right.y   = 0.0; right   = right.normalized()
+	var forward: Vector3 = -yaw.global_transform.basis.z
+	forward.y = 0.0
+	forward = forward.normalized()
+	var right: Vector3 = yaw.global_transform.basis.x
+	right.y = 0.0
+	right = right.normalized()
 
 	var desired_dir: Vector3 = (right * input_vec.x + forward * input_vec.y)
 	if desired_dir.length() > 0.001:
@@ -103,9 +107,11 @@ func _physics_process(delta: float) -> void:
 	if is_on_floor() and _snap_block <= 0.0:
 		var n := get_floor_normal()
 		var slope := acos(clamp(n.y, -1.0, 1.0))
-		floor_snap_length = lerp(ground_snap_distance,
-								 ground_snap_distance * 1.6,
-								 clamp(slope / deg_to_rad(35.0), 0.0, 1.0))
+		floor_snap_length = lerp(
+			ground_snap_distance,
+			ground_snap_distance * 1.6,
+			clamp(slope / deg_to_rad(35.0), 0.0, 1.0)
+		)
 	else:
 		# briefly disable snap right after jumping
 		floor_snap_length = 0.0 if _snap_block > 0.0 else ground_snap_distance
@@ -113,6 +119,6 @@ func _physics_process(delta: float) -> void:
 	set_safe_margin(step_max_height * 0.4)
 	move_and_slide()
 
-	# (Optional) If you have a global AI Blackboard:
-	# if Engine.is_editor_hint() == false and has_node("/root/Blackboard"):
-	#     Blackboard.tick(delta)
+	# ---- Blackboard tick: update & expire alerts ----
+	if Engine.has_singleton("Blackboard"):
+		Blackboard.tick(delta)

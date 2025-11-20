@@ -16,20 +16,22 @@ signal player_spotted(player_position: Vector3)
 @export var max_z: float =  50.0
 @export var flight_height: float = 40.0
 
-# Vision / detection
-@export var detection_range: float = 40.0
-@export var detection_angle: float = 45.0
+# Vision / detection (cone)
+@export var detection_range: float = 80.0   # big enough, heli is high
+@export var detection_angle: float = 45.0   # half-angle of cone in degrees
 
-# How much to rotate the helicopter model relative to its movement direction (in degrees)
-# Adjust this in the Inspector until the nose points forward: try 0, 90, 180, -90
+# Visual forward offset (because model isn't aligned with -Z)
 @export var forward_offset_deg: float = 0.0
+
+# --- Noisy sighting settings ---
+@export var use_noisy_reports: bool = true
+@export var sighting_noise_radius: float = 5.0
 
 var current_target_index: int = 0
 var random_target: Vector3 = Vector3.ZERO
 var rng := RandomNumberGenerator.new()
 
 var debug_timer: float = 0.0
-var raycast: RayCast3D = null
 var player: Node3D = null
 
 
@@ -38,16 +40,9 @@ func _ready() -> void:
 	rng.randomize()
 
 	player = get_tree().get_first_node_in_group("player") as Node3D
+	if player == null:
+		push_warning("No node in group 'player' found – detection will never work!")
 
-	# find your existing RayCast3D
-	var rc := get_node_or_null("SearchLightPi/SearchLight/RayCast3D")
-	if rc is RayCast3D:
-		raycast = rc as RayCast3D
-		raycast.enabled = true
-	else:
-		push_warning("RayCast3D not found at 'SearchLightPi/SearchLight/RayCast3D' – detection will be disabled.")
-
-	# initial target
 	if use_random_patrol:
 		_pick_new_random_target()
 	elif patrol_points.size() > 0:
@@ -71,9 +66,7 @@ func _physics_process(delta: float) -> void:
 	_detect_player()
 
 
-# ------------------------
-# RANDOM ROAM MOVEMENT
-# ------------------------
+# --- RANDOM MOVEMENT ---
 func _pick_new_random_target() -> void:
 	var x := rng.randf_range(min_x, max_x)
 	var z := rng.randf_range(min_z, max_z)
@@ -92,16 +85,13 @@ func _move_random(delta: float) -> void:
 		var flat_dir := Vector3(dir.x, 0.0, dir.z)
 		if flat_dir.length() > 0.001:
 			var target_yaw := atan2(flat_dir.x, flat_dir.z)
-			# apply configurable forward offset (in radians)
 			target_yaw += deg_to_rad(forward_offset_deg)
 			rotation.y = lerp_angle(rotation.y, target_yaw, rotation_speed * delta)
 	else:
 		_pick_new_random_target()
 
 
-# ------------------------
-# WAYPOINT MOVEMENT
-# ------------------------
+# --- WAYPOINT MOVEMENT ---
 func _move_waypoints(delta: float) -> void:
 	if patrol_points.is_empty():
 		return
@@ -122,7 +112,6 @@ func _move_waypoints(delta: float) -> void:
 		var flat_dir := Vector3(dir.x, 0.0, dir.z)
 		if flat_dir.length() > 0.001:
 			var target_yaw := atan2(flat_dir.x, flat_dir.z)
-			# apply same forward offset here
 			target_yaw += deg_to_rad(forward_offset_deg)
 			rotation.y = lerp_angle(rotation.y, target_yaw, rotation_speed * delta)
 	else:
@@ -130,12 +119,8 @@ func _move_waypoints(delta: float) -> void:
 		print("🔄 Next patrol point:", current_target_index)
 
 
-# ------------------------
-# RAYCAST-BASED DETECTION
-# ------------------------
+# --- CONE-BASED DETECTION ---
 func _detect_player() -> void:
-	if raycast == null:
-		return
 	if not is_instance_valid(player):
 		return
 
@@ -144,24 +129,30 @@ func _detect_player() -> void:
 	if distance > detection_range:
 		return
 
-	# angle between helicopter forward and player
 	var heli_forward := -global_transform.basis.z
-	var angle := rad_to_deg(acos(clamp(heli_forward.normalized().dot(to_player.normalized()), -1.0, 1.0)))
+	var angle := rad_to_deg(
+		acos(
+			clamp(heli_forward.normalized().dot(to_player.normalized()), -1.0, 1.0)
+		)
+	)
+
 	if angle > detection_angle:
 		return
 
-	# aim the raycast at the player (local space)
-	raycast.target_position = raycast.to_local(player.global_position)
-	raycast.force_raycast_update()
-
-	if raycast.is_colliding() and raycast.get_collider() == player:
-		var pos := player.global_position
-		print("🚨 Helicopter searchlight hit player at:", pos)
-		emit_signal("player_spotted", pos)
-		_notify_guards(pos)
+	var pos := player.global_position
+	print("🚨 Helicopter sees player in cone at:", pos)
+	emit_signal("player_spotted", pos)
+	_notify_guards(pos)
 
 
+# --- GUARD NOTIFICATION ---
 func _notify_guards(player_pos: Vector3) -> void:
+	var reported_pos := player_pos
+
+	if use_noisy_reports:
+		reported_pos.x = player_pos.x + rng.randf_range(-sighting_noise_radius, sighting_noise_radius)
+		reported_pos.z = player_pos.z + rng.randf_range(-sighting_noise_radius, sighting_noise_radius)
+
 	for guard in get_tree().get_nodes_in_group("guards"):
 		if guard.has_method("on_player_spotted"):
-			guard.on_player_spotted(player_pos)
+			guard.on_player_spotted(reported_pos)
