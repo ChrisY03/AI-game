@@ -20,6 +20,10 @@ signal player_spotted(player_position: Vector3)
 @export var detection_range: float = 40.0
 @export var detection_angle: float = 45.0
 
+# How much to rotate the helicopter model relative to its movement direction (in degrees)
+# Adjust this in the Inspector until the nose points forward: try 0, 90, 180, -90
+@export var forward_offset_deg: float = 0.0
+
 var current_target_index: int = 0
 var random_target: Vector3 = Vector3.ZERO
 var rng := RandomNumberGenerator.new()
@@ -88,6 +92,8 @@ func _move_random(delta: float) -> void:
 		var flat_dir := Vector3(dir.x, 0.0, dir.z)
 		if flat_dir.length() > 0.001:
 			var target_yaw := atan2(flat_dir.x, flat_dir.z)
+			# apply configurable forward offset (in radians)
+			target_yaw += deg_to_rad(forward_offset_deg)
 			rotation.y = lerp_angle(rotation.y, target_yaw, rotation_speed * delta)
 	else:
 		_pick_new_random_target()
@@ -116,6 +122,8 @@ func _move_waypoints(delta: float) -> void:
 		var flat_dir := Vector3(dir.x, 0.0, dir.z)
 		if flat_dir.length() > 0.001:
 			var target_yaw := atan2(flat_dir.x, flat_dir.z)
+			# apply same forward offset here
+			target_yaw += deg_to_rad(forward_offset_deg)
 			rotation.y = lerp_angle(rotation.y, target_yaw, rotation_speed * delta)
 	else:
 		current_target_index = (current_target_index + 1) % patrol_points.size()
