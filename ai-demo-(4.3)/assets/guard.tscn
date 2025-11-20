@@ -1,0 +1,61 @@
+[gd_scene load_steps=8 format=3 uid="uid://bkdeajec0vros"]
+
+[ext_resource type="Material" uid="uid://c4wwd83fnrqe4" path="res://materials/red.tres" id="1_6305i"]
+[ext_resource type="Script" path="res://scripts/Guard.gd" id="1_r8jo8"]
+[ext_resource type="Script" path="res://addons/tattomoosa.vision_cone_3d/src/VisionCone3D.gd" id="3_agl3b"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_rtt6x"]
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_33uwf"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_3ryrw"]
+size = Vector3(0.7, 0.1, 0.3)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ajgek"]
+albedo_color = Color(0, 0, 0, 1)
+
+[node name="Guard" type="CharacterBody3D"]
+script = ExtResource("1_r8jo8")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("CapsuleShape3D_rtt6x")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="CollisionShape3D"]
+material_override = ExtResource("1_6305i")
+mesh = SubResource("CapsuleMesh_33uwf")
+
+[node name="NavigationAgent3D" type="NavigationAgent3D" parent="."]
+
+[node name="WP1" type="Marker3D" parent="."]
+
+[node name="WP2" type="Marker3D" parent="."]
+
+[node name="WP3" type="Marker3D" parent="."]
+
+[node name="WP4" type="Marker3D" parent="."]
+
+[node name="Facing" type="Node3D" parent="."]
+
+[node name="MeshInstance3D2" type="MeshInstance3D" parent="Facing"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.00641823, 0.585872, -0.380594)
+mesh = SubResource("BoxMesh_3ryrw")
+skeleton = NodePath("../../CollisionShape3D")
+surface_material_override/0 = SubResource("StandardMaterial3D_ajgek")
+
+[node name="Label3D" type="Label3D" parent="Facing"]
+transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0.00152302, 1.15203, -0.00184846)
+text = "PATROL"
+
+[node name="RayCast3D" type="RayCast3D" parent="Facing"]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0.00750935, 0.235567, -0.639258)
+
+[node name="SpotLight3D" type="SpotLight3D" parent="Facing"]
+transform = Transform3D(1, 0, 0, 0, 0.984607, 0.174782, 0, -0.174782, 0.984607, 0, 0.729771, -0.643578)
+light_color = Color(0.999999, 0.997351, 0.486144, 1)
+light_energy = 3.0
+spot_range = 12.599
+spot_angle = 28.95
+
+[node name="VisionCone3D" type="Area3D" parent="Facing"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.596743, -0.936384)
+script = ExtResource("3_agl3b")
