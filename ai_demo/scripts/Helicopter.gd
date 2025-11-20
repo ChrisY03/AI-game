@@ -11,9 +11,9 @@ signal player_spotted(player_position: Vector3)
 
 # Random roam bounds (XZ) + height
 @export var min_x: float = -50.0
-@export var max_x: float =  50.0
+@export var max_x: float = 50.0
 @export var min_z: float = -50.0
-@export var max_z: float =  50.0
+@export var max_z: float = 50.0
 @export var flight_height: float = 40.0
 
 # Vision / detection (cone)
@@ -66,7 +66,9 @@ func _physics_process(delta: float) -> void:
 	_detect_player()
 
 
-# --- RANDOM MOVEMENT ---
+# ------------------------
+# RANDOM MOVEMENT
+# ------------------------
 func _pick_new_random_target() -> void:
 	var x := rng.randf_range(min_x, max_x)
 	var z := rng.randf_range(min_z, max_z)
@@ -91,7 +93,9 @@ func _move_random(delta: float) -> void:
 		_pick_new_random_target()
 
 
-# --- WAYPOINT MOVEMENT ---
+# ------------------------
+# WAYPOINT MOVEMENT
+# ------------------------
 func _move_waypoints(delta: float) -> void:
 	if patrol_points.is_empty():
 		return
@@ -119,7 +123,9 @@ func _move_waypoints(delta: float) -> void:
 		print("🔄 Next patrol point:", current_target_index)
 
 
-# --- CONE-BASED DETECTION ---
+# ------------------------
+# CONE-BASED DETECTION
+# ------------------------
 func _detect_player() -> void:
 	if not is_instance_valid(player):
 		return
@@ -145,14 +151,25 @@ func _detect_player() -> void:
 	_notify_guards(pos)
 
 
-# --- GUARD NOTIFICATION ---
+# ------------------------
+# GUARD NOTIFICATION + BLACKBOARD ALERT
+# ------------------------
 func _notify_guards(player_pos: Vector3) -> void:
 	var reported_pos := player_pos
 
+	# Local noisy position sent directly to guards (optional)
 	if use_noisy_reports:
 		reported_pos.x = player_pos.x + rng.randf_range(-sighting_noise_radius, sighting_noise_radius)
 		reported_pos.z = player_pos.z + rng.randf_range(-sighting_noise_radius, sighting_noise_radius)
 
+	# Write an alert into the Blackboard so other AI can react
+	if Engine.has_singleton("Blackboard"):
+		var ttl := 5.0  # how long guards should care about this sighting (seconds)
+		Blackboard.add_noise(player_pos, sighting_noise_radius, ttl)
+		print("📡 Heli wrote alert to blackboard at:", player_pos,
+			" radius:", sighting_noise_radius, " ttl:", ttl)
+
+	# Notify all guards directly (they can use reported_pos however they want)
 	for guard in get_tree().get_nodes_in_group("guards"):
 		if guard.has_method("on_player_spotted"):
 			guard.on_player_spotted(reported_pos)
