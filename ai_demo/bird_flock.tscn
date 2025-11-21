@@ -9,6 +9,7 @@ height = 0.001
 radius = 20.0
 
 [node name="BirdFlock" type="Node3D"]
+script = ExtResource("1_gwamr")
 
 [node name="TriggerArea" type="Area3D" parent="."]
 
