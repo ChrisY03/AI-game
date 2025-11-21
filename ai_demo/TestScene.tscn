@@ -1,9 +1,14 @@
-[gd_scene load_steps=5 format=3 uid="uid://b4o3xticqvlmr"]
+[gd_scene load_steps=6 format=3 uid="uid://b4o3xticqvlmr"]
 
 [ext_resource type="PackedScene" uid="uid://dts1rqcw4f4af" path="res://assets/player.tscn" id="1_qhx6n"]
 [ext_resource type="PackedScene" uid="uid://bkdeajec0vros" path="res://assets/guard.tscn" id="2_paj2h"]
 [ext_resource type="PackedScene" uid="uid://darvbvuei0n3b" path="res://assets/terrrain.tscn" id="3_8irme"]
 [ext_resource type="PackedScene" uid="uid://ceqkgqnynw557" path="res://assets/heli.tscn" id="4_l7h67"]
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_go42g"]
+margin = 0.0
+height = 0.001
+radius = 20.0
 
 [node name="Test Scene" type="Node3D"]
 
@@ -41,6 +46,13 @@ transform = Transform3D(1, 0, 0, 0, 0.8609995, 0.5086058, 0, -0.5086058, 0.86099
 [node name="SearchLight" parent="Helicopter/SearchLightPivot" index="0"]
 spot_range = 100.0
 spot_angle = 15.0
+
+[node name="BirdFlock" type="Node3D" parent="."]
+
+[node name="TriggerArea" type="Area3D" parent="BirdFlock"]
+
+[node name="Collision" type="CollisionShape3D" parent="BirdFlock/TriggerArea"]
+shape = SubResource("CylinderShape3D_go42g")
 
 [editable path="Guard"]
 [editable path="Helicopter"]
