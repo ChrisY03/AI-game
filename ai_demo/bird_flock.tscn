@@ -1,4 +1,7 @@
-[gd_scene load_steps=2 format=3 uid="uid://ylggyhfgm3a7"]
+[gd_scene load_steps=4 format=3 uid="uid://ylggyhfgm3a7"]
+
+[ext_resource type="Script" uid="uid://bqe7fs3dwa148" path="res://scripts/BirdFlock.gd" id="1_gwamr"]
+[ext_resource type="PackedScene" uid="uid://cyr701bbo8g0u" path="res://assets/bird.glb" id="2_5ya3l"]
 
 [sub_resource type="CylinderShape3D" id="CylinderShape3D_go42g"]
 margin = 0.0
@@ -13,25 +16,6 @@ radius = 20.0
 shape = SubResource("CylinderShape3D_go42g")
 
 [node name="Birds" type="Node3D" parent="."]
+script = ExtResource("1_gwamr")
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="Birds"]
-
-[node name="Bird1" type="MeshInstance3D" parent="Birds/MeshInstance3D"]
-
-[node name="Bird2" type="MeshInstance3D" parent="Birds/MeshInstance3D"]
-
-[node name="Bird3" type="MeshInstance3D" parent="Birds/MeshInstance3D"]
-
-[node name="Bird4" type="MeshInstance3D" parent="Birds/MeshInstance3D"]
-
-[node name="Bird5" type="MeshInstance3D" parent="Birds/MeshInstance3D"]
-
-[node name="Bird6" type="MeshInstance3D" parent="Birds/MeshInstance3D"]
-
-[node name="Bird7" type="MeshInstance3D" parent="Birds/MeshInstance3D"]
-
-[node name="Bird8" type="MeshInstance3D" parent="Birds/MeshInstance3D"]
-
-[node name="Bird9" type="MeshInstance3D" parent="Birds/MeshInstance3D"]
-
-[node name="Bird10" type="MeshInstance3D" parent="Birds/MeshInstance3D"]
+[node name="Sketchfab_Scene" parent="Birds" instance=ExtResource("2_5ya3l")]

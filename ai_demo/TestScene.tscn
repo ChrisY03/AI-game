@@ -4,11 +4,7 @@
 [ext_resource type="PackedScene" uid="uid://bkdeajec0vros" path="res://assets/guard.tscn" id="2_paj2h"]
 [ext_resource type="PackedScene" uid="uid://darvbvuei0n3b" path="res://assets/terrrain.tscn" id="3_8irme"]
 [ext_resource type="PackedScene" uid="uid://ceqkgqnynw557" path="res://assets/heli.tscn" id="4_l7h67"]
-
-[sub_resource type="CylinderShape3D" id="CylinderShape3D_go42g"]
-margin = 0.0
-height = 0.001
-radius = 20.0
+[ext_resource type="PackedScene" uid="uid://ylggyhfgm3a7" path="res://bird_flock.tscn" id="5_sreuk"]
 
 [node name="Test Scene" type="Node3D"]
 
@@ -47,12 +43,7 @@ transform = Transform3D(1, 0, 0, 0, 0.8609995, 0.5086058, 0, -0.5086058, 0.86099
 spot_range = 100.0
 spot_angle = 15.0
 
-[node name="BirdFlock" type="Node3D" parent="."]
-
-[node name="TriggerArea" type="Area3D" parent="BirdFlock"]
-
-[node name="Collision" type="CollisionShape3D" parent="BirdFlock/TriggerArea"]
-shape = SubResource("CylinderShape3D_go42g")
+[node name="BirdFlock" parent="." instance=ExtResource("5_sreuk")]
 
 [editable path="Guard"]
 [editable path="Helicopter"]
