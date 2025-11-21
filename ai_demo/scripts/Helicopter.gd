@@ -165,7 +165,7 @@ func _notify_guards(player_pos: Vector3) -> void:
 	# Write an alert into the Blackboard so other AI can react
 	if Engine.has_singleton("Blackboard"):
 		var ttl := 5.0  # how long guards should care about this sighting (seconds)
-		Blackboard.a\\\dd_noise(player_pos, sighting_noise_radius, ttl)
+		Blackboard.add_noise(player_pos, sighting_noise_radius, ttl)
 		print("📡 Heli wrote alert to blackboard at:", player_pos,
 			" radius:", sighting_noise_radius, " ttl:", ttl)
 
