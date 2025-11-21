@@ -1,134 +1,127 @@
 extends Node3D
 
-# --- Idle circle flight ---
-@export var orbit_radius: float = 4.0      # size of the circle
-@export var orbit_height: float = 3.0      # height above the BirdFlock root
-@export var orbit_speed: float = 1.5       # how fast the flock circles
+# --------- EXPORTS ---------
+@export var orbit_radius: float = 4.0
+@export var orbit_speed: float = 1.2
+@export var orbit_height: float = 1.5
 
-# --- Flee behaviour (when player steps into trigger) ---
-@export var flee_height: float = 14.0
-@export var flee_distance: float = 30.0
+@export var auto_snap_to_ground: bool = true
+@export var terrain_offset: float = 0.3
+
+@export var flee_height: float = 6.0
+@export var flee_distance: float = 12.0
+@export var flee_speed: float = 6.0
 @export var flee_duration: float = 3.0
 
-# --- Noise sent to guards via Blackboard ---
-@export var noise_radius: float = 8.0      # how "big" the noise is
-@export var noise_ttl: float = 4.0         # how long the alert lives (seconds)
+# --------- INTERNAL STATE ---------
+var birds: Array[Node3D] = []
+var bird_angles: Array[float] = []
 
-var birds: Node3D = null
-var trigger_area: Area3D = null
-var player: Node3D = null
-
-var _state: String = "idle"
-var _flee_time: float = 0.0
-var _flee_target: Vector3 = Vector3.ZERO
-
-var rng: RandomNumberGenerator = RandomNumberGenerator.new()
+var fleeing: bool = false
+var flee_timer: float = 0.0
+var flee_target: Vector3 = Vector3.ZERO
 
 
 func _ready() -> void:
-	rng.randomize()
+	# Collect birds
+	var birds_node := get_node("Birds") as Node3D
+	birds = []
+	for child in birds_node.get_children():
+		if child is Node3D:
+			birds.append(child as Node3D)
 
-	# Find child nodes
-	birds = get_node_or_null("Birds") as Node3D
-	if birds == null:
-		push_warning("BirdFlock: no 'Birds' child found.")
-	else:
-		# Make sure the birds start at the desired height
-		var p: Vector3 = birds.position
-		p.y = orbit_height
-		birds.position = p
+	# Assign random orbit start angles
+	bird_angles.resize(birds.size())
+	for i in birds.size():
+		bird_angles[i] = randf() * TAU
 
-	trigger_area = get_node_or_null("TriggerArea") as Area3D
-	if trigger_area:
-		trigger_area.body_entered.connect(_on_trigger_body_entered)
-	else:
-		push_warning("BirdFlock: no 'TriggerArea' child found.")
+	# Connect trigger area
+	var area := get_node("TriggerArea") as Area3D
+	area.body_entered.connect(_on_player_enter)
 
-	# Optional: configure cylinder radius to roughly match orbit
-	if trigger_area:
-		var shape: CollisionShape3D = trigger_area.get_node_or_null("Collision") as CollisionShape3D
-		if shape and shape.shape is CylinderShape3D:
-			var cyl: CylinderShape3D = shape.shape as CylinderShape3D
-			cyl.radius = orbit_radius + 1.0
-			cyl.height = 2.0
-
-	player = get_tree().get_first_node_in_group("player") as Node3D
+	# Snap flock to terrain height
+	if auto_snap_to_ground:
+		_snap_to_ground()
 
 
 func _physics_process(delta: float) -> void:
-	if birds == null:
-		return
-
-	match _state:
-		"idle":
-			_update_idle_orbit()
-		"flee":
-			_update_flee(delta)
+	if fleeing:
+		_update_flee(delta)
+	else:
+		_update_idle_orbit(delta)
 
 
-# -----------------------
-# Idle circle flight
-# -----------------------
-func _update_idle_orbit() -> void:
-	# Use time to move birds in a circle around the BirdFlock root
-	var t: float = float(Time.get_ticks_msec()) / 1000.0 * orbit_speed
-	birds.position.x = cos(t) * orbit_radius
-	birds.position.z = sin(t) * orbit_radius
-	# Keep height fixed
-	birds.position.y = orbit_height
+# ----------------------------------------------------------
+# IDLE ORBIT — Birds fly in a circle
+# ----------------------------------------------------------
+
+func _update_idle_orbit(delta: float) -> void:
+	var center: Vector3 = global_position
+
+	for i in birds.size():
+		bird_angles[i] += orbit_speed * delta
+
+		var angle: float = bird_angles[i]
+		var x: float = sin(angle) * orbit_radius
+		var z: float = cos(angle) * orbit_radius
+
+		var target_pos: Vector3 = center + Vector3(x, orbit_height, z)
+		birds[i].global_position = target_pos
+
+		# Face direction of travel
+		var forward: Vector3 = Vector3(sin(angle), 0.0, cos(angle))
+		birds[i].look_at(target_pos + forward * 2.0, Vector3.UP)
 
 
-# -----------------------
-# Flee behaviour
-# -----------------------
-func _start_flee() -> void:
-	if birds == null:
-		return
+# ----------------------------------------------------------
+# FLEE BEHAVIOR
+# ----------------------------------------------------------
 
-	_state = "flee"
-	_flee_time = 0.0
-
-	# Pick a random horizontal direction
-	var dir: Vector3 = Vector3(
-		rng.randf_range(-1.0, 1.0),
-		0.0,
-		rng.randf_range(-1.0, 1.0)
-	)
-	if dir.length() < 0.001:
-		dir = Vector3(1.0, 0.0, 0.0)
-	dir = dir.normalized()
-
-	# Target is some distance away and higher in the sky
-	_flee_target = Vector3(
-		dir.x * flee_distance,
-		flee_height,
-		dir.z * flee_distance
-	)
-
-
-func _update_flee(delta: float) -> void:
-	_flee_time += delta
-	var t: float = clamp(_flee_time / flee_duration, 0.0, 1.0)
-
-	# Move smoothly from current position to flee target
-	birds.position = birds.position.lerp(_flee_target, t)
-
-	if t >= 1.0:
-		# Stay up there; you could switch back to idle if you want
-		_state = "idle"
-
-
-# -----------------------
-# Trigger callback
-# -----------------------
-func _on_trigger_body_entered(body: Node) -> void:
+func _on_player_enter(body: Node) -> void:
 	if not body.is_in_group("player"):
 		return
 
-	print("🕊️ Bird flock scared by player at:", body.global_position)
+	print("🕊 Birds startled! Fleeing!")
+	fleeing = true
+	flee_timer = flee_duration
 
-	_start_flee()
+	# Pick a direction away from the flock
+	var rand_dir: Vector3 = Vector3(randf() * 2.0 - 1.0, 0.0, randf() * 2.0 - 1.0).normalized()
+	flee_target = global_position + rand_dir * flee_distance
+	flee_target.y += flee_height
 
-	# Write a noise alert to the Blackboard for guards to react to
-	if Engine.has_singleton("Blackboard"):
-		Blackboard.add_noise(body.global_position, noise_radius, noise_ttl)
+
+func _update_flee(delta: float) -> void:
+	flee_timer -= delta
+	if flee_timer <= 0.0:
+		fleeing = false
+		return
+
+	for bird in birds:
+		var to_target: Vector3 = flee_target - bird.global_position
+		var dir: Vector3 = to_target.normalized()
+		bird.global_position += dir * flee_speed * delta
+		bird.look_at(bird.global_position + dir, Vector3.UP)
+
+
+# ----------------------------------------------------------
+# GROUND SNAP — places flock on terrain
+# ----------------------------------------------------------
+
+func _snap_to_ground() -> void:
+	var space_state := get_world_3d().direct_space_state
+
+	var from: Vector3 = global_position + Vector3(0, 50, 0)
+	var to: Vector3 = global_position + Vector3(0, -200, 0)
+
+	var params := PhysicsRayQueryParameters3D.create(from, to)
+	params.collide_with_areas = false
+	params.collide_with_bodies = true
+
+	var result: Dictionary = space_state.intersect_ray(params)
+
+	if result.has("position"):
+		var ground_pos: Vector3 = result["position"] as Vector3
+		global_position.y = ground_pos.y + terrain_offset
+	else:
+		print("⚠ BirdFlock: Could not snap flock to ground.")
