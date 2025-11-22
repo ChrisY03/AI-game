@@ -17,6 +17,7 @@ script = ExtResource("1_gwamr")
 shape = SubResource("CylinderShape3D_go42g")
 
 [node name="Birds" type="Node3D" parent="."]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 0, 0, 0)
 script = ExtResource("1_gwamr")
 
 [node name="Sketchfab_Scene" parent="Birds" instance=ExtResource("2_5ya3l")]
