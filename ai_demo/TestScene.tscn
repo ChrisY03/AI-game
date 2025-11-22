@@ -1,13 +1,22 @@
+<<<<<<< Updated upstream
 [gd_scene load_steps=8 format=3 uid="uid://b4o3xticqvlmr"]
+=======
+[gd_scene load_steps=7 format=3 uid="uid://b4o3xticqvlmr"]
+>>>>>>> Stashed changes
 
 [ext_resource type="PackedScene" uid="uid://dts1rqcw4f4af" path="res://assets/player.tscn" id="1_qhx6n"]
 [ext_resource type="PackedScene" uid="uid://bkdeajec0vros" path="res://assets/guard.tscn" id="2_paj2h"]
 [ext_resource type="PackedScene" uid="uid://darvbvuei0n3b" path="res://assets/terrrain.tscn" id="3_8irme"]
 [ext_resource type="PackedScene" uid="uid://ceqkgqnynw557" path="res://assets/heli.tscn" id="4_l7h67"]
+<<<<<<< Updated upstream
 [ext_resource type="PackedScene" uid="uid://cyr701bbo8g0u" path="res://assets/bird.glb" id="5_sreuk"]
 [ext_resource type="Script" uid="uid://c4nui3rwvky6a" path="res://BirdFlock.gd" id="5_tq6uv"]
 
 [sub_resource type="GDScript" id="GDScript_12c36"]
+=======
+[ext_resource type="PackedScene" uid="uid://boxa8qyw466xs" path="res://assets/sector_bounds.tscn" id="4_tq6uv"]
+[ext_resource type="PackedScene" path="res://bird_flock.tscn" id="5_sreuk"]
+>>>>>>> Stashed changes
 
 [node name="Test Scene" type="Node3D"]
 
@@ -31,6 +40,8 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, -5, -71.933)
 
 [node name="Terrrain" parent="." instance=ExtResource("3_8irme")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.285622, -0.244715, -0.0728989)
+
+[node name="SectorBounds" parent="Terrrain" instance=ExtResource("4_tq6uv")]
 
 [node name="Helicopter" parent="." instance=ExtResource("4_l7h67")]
 transform = Transform3D(1.5, 0, 0, 0, -6.556708e-08, 1.5, 0, -1.5, -6.556708e-08, 0, 40, 0)

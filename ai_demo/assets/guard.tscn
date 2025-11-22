@@ -48,7 +48,7 @@ transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0.0015
 text = "PATROL"
 
 [node name="RayCast3D" type="RayCast3D" parent="Facing"]
-transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0.00750935, 0.235567, -0.639258)
+transform = Transform3D(1, 0, 0, 0, 0.9999546, 0.009529327, 0, -0.009529327, 0.9999546, 0.00750935, 0.235567, -0.639258)
 
 [node name="SpotLight3D" type="SpotLight3D" parent="Facing"]
 transform = Transform3D(1, 0, 0, 0, 0.977787, 0.20960106, 0, -0.20960106, 0.977787, 0, 0.729771, -0.60183114)
