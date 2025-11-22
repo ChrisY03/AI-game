@@ -35,6 +35,7 @@ mesh = SubResource("CapsuleMesh_33uwf")
 [node name="WP4" type="Marker3D" parent="."]
 
 [node name="Facing" type="Node3D" parent="."]
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 0, 0, -0.048220873)
 
 [node name="MeshInstance3D2" type="MeshInstance3D" parent="Facing"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.00641823, 0.585872, -0.380594)
