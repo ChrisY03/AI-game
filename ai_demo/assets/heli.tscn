@@ -1,7 +1,7 @@
 [gd_scene load_steps=8 format=3 uid="uid://ceqkgqnynw557"]
 
 [ext_resource type="Material" uid="uid://bjpg1ayxeeek1" path="res://materials/grey.tres" id="1_kydm2"]
-[ext_resource type="Script" path="res://scripts/Helicopter.gd" id="2_gtk7b"]
+[ext_resource type="Script" uid="uid://crjetndse2yms" path="res://scripts/Helicopter.gd" id="2_gtk7b"]
 
 [sub_resource type="CapsuleMesh" id="CapsuleMesh_b7ogu"]
 radius = 1.028
@@ -21,6 +21,7 @@ size = Vector3(0.425, 0.37, 3.755)
 
 [node name="Helicopter" type="MeshInstance3D"]
 transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 0, 0)
+layers = 3
 material_override = ExtResource("1_kydm2")
 mesh = SubResource("CapsuleMesh_b7ogu")
 script = ExtResource("2_gtk7b")
@@ -44,6 +45,12 @@ mesh = SubResource("BoxMesh_kkl24")
 transform = Transform3D(1, 0, 0, 0, 0.861, 0.508606, 0, -0.508606, 0.861, 0, 0.776416, 1.40398)
 material_override = ExtResource("1_kydm2")
 mesh = SubResource("BoxMesh_83g8w")
+
+[node name="OmniLight3D" type="OmniLight3D" parent="tail/tailback"]
+transform = Transform3D(1, 0, 0, 0, 0.9999995, 0, 0, 0, 0.9999995, 0, 0.3649327, 1.6195109)
+light_color = Color(1, 0, 0, 1)
+light_energy = 16.0
+light_volumetric_fog_energy = 0.5
 
 [node name="SearchLightPivot" type="Node3D" parent="."]
 

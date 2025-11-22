@@ -122,3 +122,10 @@ func _physics_process(delta: float) -> void:
 	# ---- Blackboard tick: update & expire alerts ----
 	if Engine.has_singleton("Blackboard"):
 		Blackboard.tick(delta)
+		
+var _acc := 0.0
+func _process(delta: float) -> void:
+	_acc += delta
+	if _acc >= 1.0:
+		Director.tick_dispatch(_acc)
+		_acc = 0.0
