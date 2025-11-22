@@ -8,6 +8,7 @@ class_name AIDirector
 @export var min_reassign_sec: float = 4.0
 
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 var sector_heat: PackedFloat32Array = PackedFloat32Array()
 var sector_cooldown: PackedFloat32Array = PackedFloat32Array()
 var _assignments: Dictionary = {}        # sector_id -> Array[Node]
@@ -19,6 +20,8 @@ func init_for_current_map() -> void:
 	sector_cooldown.resize(n)
 	for i in range(n):
 =======
+=======
+>>>>>>> Stashed changes
 var sector_heat := PackedFloat32Array()
 var sector_cooldown := PackedFloat32Array()   # unix time until
 var _last_dispatch_time := 0.0
@@ -30,12 +33,16 @@ func init_for_current_map() -> void:
 	sector_heat.resize(n)
 	sector_cooldown.resize(n)
 	for i in n:
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
 		sector_heat[i] = 0.0
 		sector_cooldown[i] = 0.0
 	_assignments.clear()
 
 func push_event(kind: String, pos: Vector3, weight: float = 1.0) -> void:
+<<<<<<< Updated upstream
 <<<<<<< Updated upstream
 	if Sector.sector_count() == 0:
 		return
@@ -117,6 +124,8 @@ func tick_dispatch(_elapsed: float) -> void:
 
 		if best_g != null:
 =======
+=======
+>>>>>>> Stashed changes
 	if Sectorizer.sector_count() == 0: return
 	var sid := Sectorizer.sector_id_at(pos)
 	if sid < 0: return
@@ -172,6 +181,9 @@ func tick_dispatch(elapsed: float) -> void:
 			if d2 < best_d2:
 				best_d2 = d2; best_g = g
 		if best_g:
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
 			best_g.set_task_investigate_sector(sid)
 			_assignments[sid] = [best_g]
