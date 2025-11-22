@@ -6,27 +6,21 @@ extends Node3D
 
 var center: Vector3
 var angle: float = 0.0
-var bird: Node3D     # single bird model
+var bird: Node3D
 
 func _ready() -> void:
-	# Get the bird node
 	var birds_node: Node = get_node("Birds")
 	if birds_node == null:
 		push_error("BirdFlock ERROR: Could not find 'Birds' node!")
 		return
-	
-	# Use first (and only) child
+
 	bird = birds_node.get_child(0)
 	if bird == null:
 		push_error("BirdFlock ERROR: Birds has no children!")
 		return
-	
-	# Center of the idle orbit (the origin of the BirdFlock node)
-	center = global_position
-	
-	# Offset bird upward so it doesn't clip terrain
-	bird.global_position = center + Vector3(0, height, orbit_radius)
 
+	center = global_position
+	bird.global_position = center + Vector3(0, height, orbit_radius)
 
 func _physics_process(delta: float) -> void:
 	if bird == null:
@@ -34,12 +28,15 @@ func _physics_process(delta: float) -> void:
 
 	angle += orbit_speed * delta
 
-	# Calculate circular orbit
-	var x = center.x + orbit_radius * cos(angle)
-	var z = center.z + orbit_radius * sin(angle)
-	var y = center.y + height
+	var x := center.x + orbit_radius * cos(angle)
+	var z := center.z + orbit_radius * sin(angle)
+	var y := center.y + height
 
 	bird.global_position = Vector3(x, y, z)
 
-	# face forward direction of orbit
-	bird.look_at(Vector3(center.x, y, center.z))
+	# Face forward along orbit path
+	var forward_offset := angle + 0.1
+	var fx := center.x + orbit_radius * cos(forward_offset)
+	var fz := center.z + orbit_radius * sin(forward_offset)
+
+	bird.look_at(Vector3(fx, y, fz), Vector3.UP)
