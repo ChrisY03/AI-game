@@ -44,7 +44,7 @@ spot_range = 100.0
 spot_angle = 15.0
 
 [node name="BirdFlock" parent="." instance=ExtResource("5_sreuk")]
-transform = Transform3D(5, 0, 0, 0, 5, 0, 0, 0, 5, 0, 5.1701336, 0)
+transform = Transform3D(-5, -4.371139e-07, -1.9106854e-14, 0, -2.1855695e-07, 5, -4.371139e-07, 5, 2.1855695e-07, 0, 5.1701336, 0)
 
 [editable path="Guard"]
 [editable path="Helicopter"]
