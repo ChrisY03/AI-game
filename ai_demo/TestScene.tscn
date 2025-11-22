@@ -1,10 +1,13 @@
-[gd_scene load_steps=6 format=3 uid="uid://b4o3xticqvlmr"]
+[gd_scene load_steps=8 format=3 uid="uid://b4o3xticqvlmr"]
 
 [ext_resource type="PackedScene" uid="uid://dts1rqcw4f4af" path="res://assets/player.tscn" id="1_qhx6n"]
 [ext_resource type="PackedScene" uid="uid://bkdeajec0vros" path="res://assets/guard.tscn" id="2_paj2h"]
 [ext_resource type="PackedScene" uid="uid://darvbvuei0n3b" path="res://assets/terrrain.tscn" id="3_8irme"]
 [ext_resource type="PackedScene" uid="uid://ceqkgqnynw557" path="res://assets/heli.tscn" id="4_l7h67"]
 [ext_resource type="PackedScene" uid="uid://cyr701bbo8g0u" path="res://assets/bird.glb" id="5_sreuk"]
+[ext_resource type="Script" uid="uid://c4nui3rwvky6a" path="res://BirdFlock.gd" id="5_tq6uv"]
+
+[sub_resource type="GDScript" id="GDScript_12c36"]
 
 [node name="Test Scene" type="Node3D"]
 
@@ -43,8 +46,16 @@ transform = Transform3D(1, 0, 0, 0, 0.8609995, 0.5086058, 0, -0.5086058, 0.86099
 spot_range = 100.0
 spot_angle = 15.0
 
-[node name="Birds" parent="." instance=ExtResource("5_sreuk")]
-transform = Transform3D(5, 0, 0, 0, 5, 0, 0, 0, 5, 0, 4.552209, 0)
+[node name="BirdFlock" type="Node3D" parent="."]
+transform = Transform3D(5, 0, 0, 0, 5, 0, 0, 0, 5, 0, 6.4250793, 0)
+script = ExtResource("5_tq6uv")
+
+[node name="Birds" type="Node3D" parent="BirdFlock"]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 0, 0, 0)
+script = SubResource("GDScript_12c36")
+
+[node name="Sketchfab_Scene" parent="BirdFlock/Birds" instance=ExtResource("5_sreuk")]
+transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 0, -8.742278e-08, 0, -1, 0, 0, 0)
 
 [editable path="Guard"]
 [editable path="Helicopter"]
