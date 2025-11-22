@@ -1,7 +1,8 @@
 [gd_scene load_steps=4 format=3 uid="uid://ylggyhfgm3a7"]
 
-[ext_resource type="Script" uid="uid://bqe7fs3dwa148" path="res://scripts/BirdFlock.gd" id="1_gwamr"]
 [ext_resource type="PackedScene" uid="uid://cyr701bbo8g0u" path="res://assets/bird.glb" id="2_5ya3l"]
+
+[sub_resource type="GDScript" id="GDScript_ioyaa"]
 
 [sub_resource type="CylinderShape3D" id="CylinderShape3D_go42g"]
 margin = 0.0
@@ -9,7 +10,7 @@ height = 0.001
 radius = 20.0
 
 [node name="BirdFlock" type="Node3D"]
-script = ExtResource("1_gwamr")
+script = SubResource("GDScript_ioyaa")
 
 [node name="TriggerArea" type="Area3D" parent="."]
 
@@ -18,7 +19,7 @@ shape = SubResource("CylinderShape3D_go42g")
 
 [node name="Birds" type="Node3D" parent="."]
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 0, 0, 0)
-script = ExtResource("1_gwamr")
+script = SubResource("GDScript_ioyaa")
 
 [node name="Sketchfab_Scene" parent="Birds" instance=ExtResource("2_5ya3l")]
 transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 0, -8.742278e-08, 0, -1, 0, 0, 0)

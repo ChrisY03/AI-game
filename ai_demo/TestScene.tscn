@@ -4,7 +4,7 @@
 [ext_resource type="PackedScene" uid="uid://bkdeajec0vros" path="res://assets/guard.tscn" id="2_paj2h"]
 [ext_resource type="PackedScene" uid="uid://darvbvuei0n3b" path="res://assets/terrrain.tscn" id="3_8irme"]
 [ext_resource type="PackedScene" uid="uid://ceqkgqnynw557" path="res://assets/heli.tscn" id="4_l7h67"]
-[ext_resource type="PackedScene" uid="uid://ylggyhfgm3a7" path="res://bird_flock.tscn" id="5_sreuk"]
+[ext_resource type="PackedScene" uid="uid://cyr701bbo8g0u" path="res://assets/bird.glb" id="5_sreuk"]
 
 [node name="Test Scene" type="Node3D"]
 
@@ -43,8 +43,8 @@ transform = Transform3D(1, 0, 0, 0, 0.8609995, 0.5086058, 0, -0.5086058, 0.86099
 spot_range = 100.0
 spot_angle = 15.0
 
-[node name="BirdFlock" parent="." instance=ExtResource("5_sreuk")]
-transform = Transform3D(-5, -4.371139e-07, -1.9106854e-14, 0, -2.1855695e-07, 5, -4.371139e-07, 5, 2.1855695e-07, 0, 5.1701336, 0)
+[node name="Birds" parent="." instance=ExtResource("5_sreuk")]
+transform = Transform3D(5, 0, 0, 0, 5, 0, 0, 0, 5, 0, 4.552209, 0)
 
 [editable path="Guard"]
 [editable path="Helicopter"]
