@@ -1,63 +1,78 @@
 extends Node3D
 
-# --- Idle orbit settings ---
+# --- SETTINGS ---
 @export var orbit_radius: float = 4.0
 @export var orbit_speed: float = 0.8
 @export var height: float = 2.0
 
-# Internal state
-var center: Vector3
 var angle: float = 0.0
-var bird: Node3D
+var has_fled: bool = false
+var player: Node3D = null
 
+# --- SCENE REFERENCES ---
+@onready var trigger_area: Area3D = $TriggerArea
+@onready var birds_root: Node3D = $Birds
+
+
+# ---------------------------------------------------------
+# READY
+# ---------------------------------------------------------
 func _ready() -> void:
-	# Find the Birds node
-	var birds_node: Node = get_node("Birds")
-	if birds_node == null:
-		push_error("BirdFlock ERROR: Could not find 'Birds' node!")
+	# Find player by group
+	player = get_tree().get_first_node_in_group("player") as Node3D
+	if player == null:
+		push_warning("⚠ No node in group 'player' found — detection won't work")
+	else:
+		print("✅ Bird flock ready — player linked:", player.name)
+
+	# Verify TriggerArea exists
+	if trigger_area == null:
+		push_error("❌ TriggerArea node NOT FOUND — check your scene!")
 		return
 
-	# Use first (and only) child mesh/model
-	bird = birds_node.get_child(0)
-	if bird == null:
-		push_error("BirdFlock ERROR: Birds has no children!")
-		return
-
-	# Center of flock orbit
-	center = global_position
-
-	# Start bird at offset position
-	bird.global_position = center + Vector3(0, height, orbit_radius)
+	# Connect trigger signal
+	if trigger_area.has_signal("body_entered"):
+		trigger_area.body_entered.connect(_on_trigger_body_entered)
+		print("✅ Trigger connected successfully")
 
 
+# ---------------------------------------------------------
+# ORBIT BEHAVIOR
+# ---------------------------------------------------------
 func _physics_process(delta: float) -> void:
-	if bird == null:
+	if has_fled:
+		_fly_up(delta)
 		return
 
-	# Advance angle
 	angle += orbit_speed * delta
 
-	# Compute orbit path
-	var x = center.x + orbit_radius * cos(angle)
-	var z = center.z + orbit_radius * sin(angle)
-	var y = center.y + height
+	var cx := global_position.x
+	var cz := global_position.z
 
-	# Update bird position
-	bird.global_position = Vector3(x, y, z)
+	for bird in birds_root.get_children():
+		var x = cx + orbit_radius * cos(angle)
+		var z = cz + orbit_radius * sin(angle)
+		var y = global_position.y + height
 
-	# Rotate bird to face movement direction
-	var forward_pos = Vector3(
-		center.x + orbit_radius * cos(angle + 0.1),
-		y,
-		center.z + orbit_radius * sin(angle + 0.1)
-	)
-	bird.look_at(forward_pos, Vector3.UP)
+		bird.global_position = Vector3(x, y, z)
+		bird.look_at(global_position, Vector3.UP)
 
 
-# ----------------------------------------------------
-# STEP 2 — Player detection using TriggerArea
-# ----------------------------------------------------
-func _on_trigger_area_body_entered(body: Node3D) -> void:
-	# Adjust name if your player node is named differently
-	if body.name == "Player":
-		print("✅ Player detected by birds!")
+# ---------------------------------------------------------
+# PLAYER ENTER DETECTED
+# ---------------------------------------------------------
+func _on_trigger_body_entered(body: Node3D) -> void:
+	if has_fled:
+		return
+
+	if body == player:
+		print("🕊️ BIRDS DETECTED PLAYER at:", player.global_position)
+		has_fled = true
+
+
+# ---------------------------------------------------------
+# FLY AWAY BEHAVIOR
+# ---------------------------------------------------------
+func _fly_up(delta: float) -> void:
+	for bird in birds_root.get_children():
+		bird.global_position.y += 6.0 * delta
