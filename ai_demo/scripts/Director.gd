@@ -7,8 +7,6 @@ class_name AIDirector
 @export var max_squads: int = 2
 @export var min_reassign_sec: float = 4.0
 
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
 var sector_heat: PackedFloat32Array = PackedFloat32Array()
 var sector_cooldown: PackedFloat32Array = PackedFloat32Array()
 var _assignments: Dictionary = {}        # sector_id -> Array[Node]
@@ -19,31 +17,11 @@ func init_for_current_map() -> void:
 	sector_heat.resize(n)
 	sector_cooldown.resize(n)
 	for i in range(n):
-=======
-=======
->>>>>>> Stashed changes
-var sector_heat := PackedFloat32Array()
-var sector_cooldown := PackedFloat32Array()   # unix time until
-var _last_dispatch_time := 0.0
-var _assignments := {}  # sector_id -> Array[Node] (guards)
-
-# call once after Sectorizer is built
-func init_for_current_map() -> void:
-	var n = Sectorizer.sector_count()
-	sector_heat.resize(n)
-	sector_cooldown.resize(n)
-	for i in n:
-<<<<<<< Updated upstream
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
 		sector_heat[i] = 0.0
 		sector_cooldown[i] = 0.0
 	_assignments.clear()
 
 func push_event(kind: String, pos: Vector3, weight: float = 1.0) -> void:
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
 	if Sector.sector_count() == 0:
 		return
 	var sid: int = Sector.sector_id_at(pos)
@@ -105,7 +83,7 @@ func tick_dispatch(_elapsed: float) -> void:
 		if _assignments.has(sid):
 			continue
 
-		var c: Vector3 = Sectorizer.center(sid)
+		var c: Vector3 = Sector.center(sid)
 
 		var best_g: Node = null
 		var best_d2: float = INF
@@ -123,68 +101,6 @@ func tick_dispatch(_elapsed: float) -> void:
 				best_g = g
 
 		if best_g != null:
-=======
-=======
->>>>>>> Stashed changes
-	if Sectorizer.sector_count() == 0: return
-	var sid := Sectorizer.sector_id_at(pos)
-	if sid < 0: return
-	var w := match kind:
-		"heli": 1.0
-		"lkp": 0.7
-		"noise": 0.4
-		_: 0.5
-	sector_heat[sid] += w * weight
-
-func tick_dispatch(elapsed: float) -> void:
-	var now := Time.get_unix_time_from_system()
-	# decay & free cooled sectors
-	for i in sector_heat.size():
-		sector_heat[i] *= heat_decay
-		if sector_heat[i] < 0.001:
-			sector_heat[i] = 0.0
-	# pick hot sectors (not cooled)
-	var hot := []
-	for i in sector_heat.size():
-		if sector_heat[i] >= hot_threshold and now >= sector_cooldown[i]:
-			hot.append(i)
-	# keep at most max_squads tasks total
-	var budget := max_squads
-	# remove finished assignments
-	var to_delete := []
-	for sid in _assignments.keys():
-		var arr: Array = _assignments[sid]
-		arr = arr.filter(func(g): return is_instance_valid(g) and not g.is_queued_for_deletion())
-		if arr.is_empty():
-			to_delete.append(sid)
-		else:
-			_assignments[sid] = arr
-	for k in to_delete:
-		_assignments.erase(k)
-	budget -= _assignments.size()
-	if budget <= 0: return
-
-	# choose nearest idle guard per hot sector until budget runs out
-	var guards := get_tree().get_nodes_in_group("guards")
-	for sid in hot:
-		if budget <= 0: break
-		if _assignments.has(sid): continue
-		var c := Sectorizer.center(sid)
-		var best_g := null
-		var best_d2 := INF
-		for g in guards:
-			if not is_instance_valid(g): continue
-			if g.is_busy(): continue
-			# reassign hysteresis: give them a minimum dwell time
-			if now - g.get_last_task_time() < min_reassign_sec: continue
-			var d2 := g.global_transform.origin.distance_squared_to(c)
-			if d2 < best_d2:
-				best_d2 = d2; best_g = g
-		if best_g:
-<<<<<<< Updated upstream
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
 			best_g.set_task_investigate_sector(sid)
 			_assignments[sid] = [best_g]
 			budget -= 1

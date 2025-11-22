@@ -1,0 +1,24 @@
+[gd_scene load_steps=5 format=3 uid="uid://f4l3n0xncmr5"]
+
+[ext_resource type="PackedScene" uid="uid://darvbvuei0n3b" path="res://assets/terrrain.tscn" id="1_aexdf"]
+[ext_resource type="PackedScene" path="res://assets/sector_bounds.tscn" id="2_d4l1i"]
+[ext_resource type="PackedScene" uid="uid://bkdeajec0vros" path="res://assets/guard.tscn" id="3_hprc1"]
+[ext_resource type="PackedScene" uid="uid://dts1rqcw4f4af" path="res://assets/player.tscn" id="4_5ku3t"]
+
+[node name="ChrisScene" type="Node3D"]
+
+[node name="Terrrain" parent="." instance=ExtResource("1_aexdf")]
+
+[node name="SectorBounds" parent="." instance=ExtResource("2_d4l1i")]
+
+[node name="Guard" parent="." instance=ExtResource("3_hprc1")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -63.059822, 23.11819, 57.83968)
+
+[node name="Player" parent="." instance=ExtResource("4_5ku3t")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -46.45511, 19.486412, 48.661983)
+
+[node name="Guard2" parent="." instance=ExtResource("3_hprc1")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -39, 25, 67)
+
+[node name="Guard3" parent="." instance=ExtResource("3_hprc1")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -43, 24, 66)
